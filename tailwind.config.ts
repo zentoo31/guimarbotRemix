@@ -1,7 +1,10 @@
 import type { Config } from "tailwindcss";
+import animations from "@midudev/tailwind-animations";
+
 
 export default {
-  content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       fontFamily: {
@@ -18,5 +21,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [animations],
 } satisfies Config;
