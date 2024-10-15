@@ -1,10 +1,11 @@
 import type { Config } from "tailwindcss";
 import animations from "@midudev/tailwind-animations";
-
+import flowbite from "flowbite-react/tailwind";
 
 export default {
   content: [
-    "./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
+    "./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}",
+    flowbite.content()],
   theme: {
     extend: {
       fontFamily: {
@@ -21,5 +22,8 @@ export default {
       },
     },
   },
-  plugins: [animations],
+  plugins: [
+    animations,
+    flowbite.plugin()
+  ],
 } satisfies Config;
