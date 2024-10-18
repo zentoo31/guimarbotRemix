@@ -11,7 +11,6 @@ import {
 import { Card } from 'flowbite-react';
 import { Bar } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
-import { main, text } from 'framer-motion/client';
 
 ChartJS.register(
     CategoryScale,
