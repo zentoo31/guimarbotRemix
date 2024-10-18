@@ -70,7 +70,7 @@ function index() {
             <div>
             <User   
               name="Jane Doe"
-              description="Product Designer"
+              description="Super admin"
               avatarProps={{
                 src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
               }} />

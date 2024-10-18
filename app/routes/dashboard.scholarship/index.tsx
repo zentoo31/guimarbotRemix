@@ -1,7 +1,7 @@
 
 function index() {
   return (
-    <div>
+    <div className="w-full flex flex-col animate-fade-in-down">
         Este es el gestor de becas
     </div>
   )
