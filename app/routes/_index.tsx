@@ -9,7 +9,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = async () =>{
-  return redirect("/login");
+  return redirect("/dashboard");
 }
 
 export default function Index() {

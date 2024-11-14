@@ -1,20 +1,20 @@
-import {Card, Label, Select, TextInput, FileInput } from "flowbite-react"
+import {Card, Label, Select, TextInput, FileInput, Textarea } from "flowbite-react"
+import { Subject } from "~/models/subject"
+import { SubjectService } from "~/services/subject.service"
 import { Button } from "@nextui-org/react"
 
 function SubjectCreate() {
     return (
-        <div className="flex flex-row">
+        <div className="flex flex-row w-full">
             <Card className="flex flex-col items-center text-center justify-between w-1/2 h-[100vh]">
-              <div className="w-[500px]">
-                <div className="w-full flex flex-row items-center justify-center"> 
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Graukarte.svg" alt="" className="w-60 h-40"/>
-                  </div>
-                  <h1 className="font-bold text-xl">Información del Curso</h1>
-                  <div className="flex flex-col text-start items-start gap-2 ">
-                        <Label>Imagen del curso</Label>
+              <div className="w-full flex flex-col gap-4">
+              <h1 className="font-bold text-xl text-start">Registrar curso</h1>
+                <div className="w-full flex flex-row justify-between gap-5"> 
+                  <img src="https://placehold.co/600x400" alt="" className="w-60 h-40"/>
+                  <div> 
                         <Label
                           htmlFor="dropzone-file"
-                          className="flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                          className="flex h-40 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                           <div className="flex flex-col items-center justify-center pb-6 pt-5">
                             <svg
                               className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
@@ -32,26 +32,41 @@ function SubjectCreate() {
                               />
                             </svg>
                             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                              <span className="font-semibold">Click to upload</span> or drag and drop
+                              <span className="font-semibold">Click para subir</span>
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                           </div>
                           <FileInput id="dropzone-file" className="hidden" />
                         </Label>
+                  </div>
+                </div>
+                  <h1 className="text-base">Información del Curso</h1>
+                  <div className="flex flex-col text-start items-start gap-2 ">
+                        
                       <Label>Nombre o Titulo</Label>
                       <TextInput placeholder="Titulo"  className="w-full"/>
                       <Label>Autor o docente</Label>
                       <TextInput placeholder="Autor" className="w-full"/>
-                      <Label>RutaId</Label>
-                      <TextInput placeholder="rutaid" className="w-full"/>
-                      <Label>Tipo</Label>
+                      <Label>Descripcion</Label>
+                      <Textarea placeholder="Descripción..." className="w-full"/>
+                      <Label>Nivel</Label>
                       <div className="w-full">
                           <Select>
-                            <option>Niños</option>
-                            <option>Adolecentes</option>
-                            <option>Todos</option>
+                            <option>Facil</option>
+                            <option>Avanzado</option>
+                            <option>Medio</option>
                           </Select> 
+                      </div> 
+                     <div className="flex flex-row gap-5 w-full">
+                      <div className="flex flex-col gap-2 w-1/2">
+                        <Label>Horas</Label>
+                        <TextInput placeholder="00" type="number" className="w-full"/>
                       </div>
+                      <div className="flex flex-col gap-2 w-1/2">
+                        <Label>Precio</Label>
+                        <TextInput placeholder="0.00" type="number" className="w-full"/>
+                      </div>
+                     </div>
                   </div>
                   
                 </div>

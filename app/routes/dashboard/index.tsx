@@ -1,8 +1,14 @@
 import { User, DateInput } from "@nextui-org/react";
 import { LoaderFunction } from "@remix-run/node";
-import { Link, MetaFunction, Outlet, redirect } from "@remix-run/react";
+import SpinnerX from "~/ui-components/spinner";
+import { Link, MetaFunction, Outlet, redirect, useNavigate } from "@remix-run/react"
+import { Admin } from "~/models/admin";
+import { useEffect, useState } from "react";
 import { HiChartPie, HiMail, HiUsers, HiInbox, HiBookOpen, HiDocumentDuplicate, HiKey, HiChartBar } from "react-icons/hi";
 import {parseAbsoluteToLocal} from "@internationalized/date";
+import { AuthService } from "~/services/auth.service";
+import { AdminInfoService } from "~/services/admin.info.service";
+
 export const meta: MetaFunction = () => {
     return [
         {title: "Dashboard | Guimarbot administrativo"}
@@ -11,13 +17,57 @@ export const meta: MetaFunction = () => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
+  
   if (url.pathname === "/dashboard") {
     return redirect("/dashboard/default");
   }
   return null;
 };
 
-function index() {
+function Index() {
+  const [admin, setAdmin] = useState<Admin | null>(null); 
+  const [isAuth, setIsAuth] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const authService = new AuthService();
+      const authStatus = await authService.isAuth();
+      setIsAuth(authStatus);
+
+      if (!authStatus) {
+        navigate("/login"); 
+      }
+    };
+    
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    const getAdminInfo = async () => {
+      const adminInfoService = new AdminInfoService();
+      const adminInfo = await adminInfoService.getAdminHeaderInfo();
+      setAdmin(adminInfo);  
+      console.log(adminInfo);
+    };
+
+    getAdminInfo();
+  }, []);  
+
+  if (isAuth === null) {
+    return <SpinnerX/>;
+  }
+
+  const logout = async () => {
+    const authService = new AuthService();
+    const logoutStatus =  await authService.logout();
+    console.log(logoutStatus);
+    navigate("/login");
+  };
+
+ 
+ 
+
   return (
     <div className="animate-fade-in-up">
       <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -69,10 +119,10 @@ function index() {
           <div className="flex items-center ms-3">
             <div>
             <User   
-              name="Jane Doe"
-              description="Super admin"
+              name={admin?.first_name + " " + admin?.last_name}
+              description={admin?.role}
               avatarProps={{
-                src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
+                src:admin?.profile_picture
               }} />
             </div>
             <div
@@ -202,24 +252,26 @@ function index() {
             </Link>
           </li>
         </ul>
-        <ul  className="space-y-2 font-medium border-t-2 border-gray-200 dark:border-gray-700 pt-2">
-        <li>
-            <Link
-              to="/dashboard/manage-admins"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-            >
-            <HiKey className = "w-6 h-6" fillOpacity={0.5} />
-              <span className="flex-1 ms-3 whitespace-nowrap">Gestor de admins</span>
-            </Link>
-          </li>
-        </ul>
+       { admin?.role === "superadmin" &&(
+         <ul  className="space-y-2 font-medium border-t-2 border-gray-200 dark:border-gray-700 pt-2">
+         <li>
+             <Link
+               to="/dashboard/manage-admins"
+               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+             >
+             <HiKey className = "w-6 h-6" fillOpacity={0.5} />
+               <span className="flex-1 ms-3 whitespace-nowrap">Gestor de admins</span>
+             </Link>
+           </li>
+         </ul>
+       )}
       </div>
       <ul className="font-medium space-y-2">
       <li>
-          <Link
-            to="/"
-            className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white bg-red-700 hover:bg-red-500 dark:hover:bg-red-500 group"
-          >
+          <button
+            className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white bg-red-700 hover:bg-red-500 dark:hover:bg-red-500 group"
+            onClick={logout}
+          >  
             <svg
               className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
               aria-hidden="true"
@@ -236,7 +288,7 @@ function index() {
               />
             </svg>
             <span className="flex-1 ms-3 whitespace-nowrap">Cerrar sesión</span>
-          </Link>
+          </button>
         </li>
       </ul>
     </div>
@@ -250,4 +302,5 @@ function index() {
   )
 }
 
-export default index
+export default Index
+

@@ -6,6 +6,9 @@ import SubjectCreate from "./subjectCreate";
 import SubjectDetail from "./subjectDetail";
 import RouteCreate from "./routeCreate";
 import RouteDetail from "./routeDetail";
+import { useEffect, useState } from "react";
+import { SubjectService } from "~/services/subject.service";
+import { Subject } from "~/models/subject";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,88 +16,6 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-const datosContenido = [
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174010',
-    nombre: 'Introducción a JavaScript',
-    autor: 'Juan Pérez',
-    rutaid: 'ruta-js-basico',
-    fechaCreacion: '2024-09-01',
-    popularidad: 87,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174011',
-    nombre: 'Curso de HTML5',
-    autor: 'Ana García',
-    rutaid: 'ruta-html-avanzado',
-    fechaCreacion: '2024-09-05',
-    popularidad: 92,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174012',
-    nombre: 'CSS para Principiantes',
-    autor: 'Luis Martínez',
-    rutaid: 'ruta-css-basico',
-    fechaCreacion: '2024-09-10',
-    popularidad: 75,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174013',
-    nombre: 'Desarrollo con React',
-    autor: 'María Ruiz',
-    rutaid: 'ruta-react-intermedio',
-    fechaCreacion: '2024-09-12',
-    popularidad: 95,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174014',
-    nombre: 'Fundamentos de TypeScript',
-    autor: 'Pedro Gómez',
-    rutaid: 'ruta-ts-basico',
-    fechaCreacion: '2024-09-15',
-    popularidad: 80,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174015',
-    nombre: 'Introducción a Node.js',
-    autor: 'Luisa López',
-    rutaid: 'ruta-node-intro',
-    fechaCreacion: '2024-09-18',
-    popularidad: 88,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174016',
-    nombre: 'SQL para Desarrolladores',
-    autor: 'Carmen Fernández',
-    rutaid: 'ruta-sql-basico',
-    fechaCreacion: '2024-09-20',
-    popularidad: 70,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174017',
-    nombre: 'Angular desde Cero',
-    autor: 'Susana Rodríguez',
-    rutaid: 'ruta-angular-intro',
-    fechaCreacion: '2024-09-22',
-    popularidad: 78,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174018',
-    nombre: 'Python para Principiantes',
-    autor: 'Miguel Morales',
-    rutaid: 'ruta-python-basico',
-    fechaCreacion: '2024-09-25',
-    popularidad: 90,
-  },
-  {
-    uuid: '123e4567-e89b-12d3-a456-426614174019',
-    nombre: 'Desarrollo Web con Django',
-    autor: 'Joseph Hernández',
-    rutaid: 'ruta-django-intro',
-    fechaCreacion: '2024-09-28',
-    popularidad: 85,
-  },
-];
 
 const rutas = [
   {
@@ -186,6 +107,18 @@ function Index() {
   const {isOpen: isCreateRoute, onOpen: onCreateRoute, onOpenChange: onCreateRouteChange} = useDisclosure();
   const { isOpen: isEditRoute, onOpen: onEditeRoute, onOpenChange: onEditRouteChange } = useDisclosure();
 
+  const [subjects, setSubjects] = useState<Subject[] | null>(null); 
+
+  useEffect(() => {
+    const loadSubjects = async () => {
+      const subjectService = new SubjectService();
+      const subjects = await subjectService.getSubjects();
+      setSubjects(subjects);
+      console.log(subjects);      
+    }
+    loadSubjects();
+  }, []);
+
   return (
     <div className="w-full animate-fade-in-down flex flex-col gap-4">
         <Card>
@@ -212,21 +145,23 @@ function Index() {
               <Table.HeadCell>uuid</Table.HeadCell>
               <Table.HeadCell>Nombre</Table.HeadCell>
               <Table.HeadCell>Autor</Table.HeadCell>
-              <Table.HeadCell>rutaid</Table.HeadCell>
+              <Table.HeadCell>Level</Table.HeadCell>
               <Table.HeadCell>Fecha de creación</Table.HeadCell>
-              <Table.HeadCell>Popularidad</Table.HeadCell>
+              <Table.HeadCell>Ruta</Table.HeadCell>
+              <Table.HeadCell>Acción</Table.HeadCell>
               <Table.HeadCell>
                 <span className="sr-only">Edit</span>
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {datosContenido.map((curso) => (
-                <Table.Row key={curso.uuid} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell>{curso.uuid}</Table.Cell>
-                  <Table.Cell>{curso.nombre}</Table.Cell>
-                  <Table.Cell>{curso.autor}</Table.Cell>
-                  <Table.Cell>{curso.fechaCreacion}</Table.Cell>
-                  <Table.Cell>{curso.popularidad}</Table.Cell>
+              {subjects?.map((curso) => (
+                <Table.Row key={curso._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <Table.Cell>{curso._id}</Table.Cell>
+                  <Table.Cell>{curso.title}</Table.Cell>
+                  <Table.Cell>{curso.author}</Table.Cell>
+                  <Table.Cell>{curso.level}</Table.Cell>
+                  <Table.Cell>{curso.created_at}</Table.Cell>
+                  <Table.Cell>{curso.level}</Table.Cell>
                   <Table.Cell>
                     <Button onPress={onOpen} className="font-mediu" color="primary">editar</Button>
                   </Table.Cell>
