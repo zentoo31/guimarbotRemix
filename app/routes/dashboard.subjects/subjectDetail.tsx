@@ -1,6 +1,10 @@
-import { Card, TextInput, Label, Table, Select, FileInput } from "flowbite-react"
-import { Button } from "@nextui-org/react"
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Card, TextInput, Label, Table, Select, FileInput, Textarea } from "flowbite-react"
+import { Button, Image, Chip } from "@nextui-org/react"
+import { useEffect, useState } from "react";
+import { SubjectService } from "~/services/subject.service";
+import { Subject } from "~/models/subject";
+import UploadWidget from "./uploadWidget";
 
 const sesiones = [
   {
@@ -14,54 +18,170 @@ const sesiones = [
     dificultad: 'Principiante',
     autores: ['Ana García', 'Luis Martínez'],
     numeroSesion: 2,
-  },
-  {
-    nombre: 'Data Binding y Directivas',
-    dificultad: 'Intermedio',
-    autores: ['Juan Hernández', 'Sofía Torres'],
-    numeroSesion: 3,
-  },
-  {
-    nombre: 'Rutas y Navegación en Angular',
-    dificultad: 'Intermedio',
-    autores: ['Raúl Díaz', 'Clara Morales'],
-    numeroSesion: 4,
   }
 ];
 
+interface subjectDetailProps{
+  subjectId: string;
+}
 
-function SubjectDetail() {
+function SubjectDetail({subjectId}: subjectDetailProps) {  
+  const [subject, setSubject] = useState<Subject | null>(null);
+
+  const [image, setImage] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [description, setDescription] = useState("");
+  const [level, setLevel] = useState("Facil");
+  const [hours, setHours] = useState<number | null>(null);
+  const [price, setPrice] = useState<number | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [tags, setTags] = useState<string[]>([]); 
+  const [banner, setBanner] = useState<string | null>(null);
+
+
+  const levels = ["Facil", "Avanzado", "Medio"];
+
+  const handleUploadSuccessImage = (uploadedUrl: string) => {
+    setImage(uploadedUrl);
+  };
+  const subjectService = new SubjectService();
+
+  const loadSubject =  async () => {
+    try {
+      const subject = await subjectService.getSubjectById(subjectId);
+      setSubject(subject);
+      setTitle(subject.title );
+      setAuthor(subject.author );
+      setDescription(subject.description );
+      setLevel(subject.level );
+      setHours(subject.hours );
+      setPrice(subject.price );
+      setImage(subject.image);
+      setBanner(subject.banner );
+    } catch (error) {
+      console.error("Error al cargar el curso:", error);
+    }
+  }
+
+  useEffect(() => {
+    loadSubject();
+  }, [])
+
+  const disableSubject = async  () => {
+    try {
+      const message = await subjectService.disableSubject(subjectId);
+      alert("Curso desactivado con éxito");
+      loadSubject();
+    } catch (error) {
+      alert("Hubo un error al desactivar el curso.");
+    }
+  }
+
+  const enableSubject = async () => {
+    try {
+      const message = await subjectService.enableSubject(subjectId);
+      alert("Curso activado con éxito");
+      loadSubject();
+    } catch (error) {
+      alert("Hubo un error al activar el curso.");
+    }
+  }
+
+  const handleSave = async () => {
+    if (!title || !author || !description || !hours || !price || !image) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    const newSubject: Subject = {
+      _id: subject?._id ?? "", 
+      created_at: subject?.created_at ?? new Date().toISOString(),
+      is_active: subject?.is_active ?? true,
+      title,
+      author,
+      description,
+      image,
+      banner: subject?.banner ?? "",
+      level,
+      hours,
+      price,
+      rate: subject?.rate ?? 0, 
+      tags: subject?.tags ?? [],
+    };
+    try {
+      const message = await subjectService.updateSubject(newSubject);
+      console.log("Curso actualizado con éxito:", message);
+      alert("Curso actualizado con éxito");
+      loadSubject();
+    } catch (error) {
+      console.error("Error al crear el curso:", error);
+      alert("Hubo un error al crear el curso.");
+    }
+  }
+
+
   return (
     <div className="w-full p-10 flex flex-row gap-2">
         <Card className="flex flex-col items-center text-center justify-between w-1/4">
           <div>
-            <div className="w-full flex flex-row items-center justify-center"> 
-              <img src="https://www.generalceramic.com/wp-content/uploads/2022/05/Evolution-Gris-Claro-Brillo-en-lOKHS9PwoXjGjfza.jpg" alt="" className="w-60 h-40"/>
+              <div className="flex flex-col items-start">
+              {subject?.is_active ? 
+                (<Chip variant="dot" color="success">Activado</Chip>)
+                : ( <Chip color="danger" variant="dot">Desactivado</Chip>)
+              }
+              </div>
+              <div className="relative w-full flex flex-row items-center justify-center">
+                  <Image
+                    src={
+                      subject?.image 
+                    }
+                    width={250}
+                    height={160}
+                    className="rounded-md relative" 
+                  />
+                  <div className="absolute z-50 top-2 right-2">
+                    <UploadWidget folder="images_subject" preset = "image_subject" label = "Cambiar" formats={['png', 'jpeg', 'jpg', 'webp']} onUploadSuccess={handleUploadSuccessImage}/>
+                  </div>
               </div>
               <h1 className="font-bold text-xl">Información del curso</h1>
               <div className="flex flex-col text-start items-start gap-2 w-full">
                   <Label>Nombre o titulo</Label>
-                  <TextInput placeholder="Titulo" defaultValue={"Lorem impsun"} className="w-full"/>
+                  <TextInput placeholder="Titulo" defaultValue={subject?.title} className="w-full"  onChange={(e) => setTitle(e.target.value)} />
                   <Label>Autor o docente</Label>
-                  <TextInput placeholder="Autor" defaultValue={"Lorem impsun"} className="w-full"/>
-                  <Label>RutaID</Label>
-                  <TextInput placeholder="rutaId" defaultValue={"ruta-1-2-3"} className="w-full"/>
+                  <TextInput placeholder="Autor" defaultValue={subject?.author} className="w-full" onChange={(e) => setAuthor(e.target.value)}/>
+                  <Label>Descripción</Label>
+                  <Textarea placeholder="description" defaultValue={subject?.description} className="w-full"  onChange={(e) => setDescription(e.target.value)}/>
+                  <Label>Nivel</Label>
+                  <Select className="w-full" onChange={(e) => setLevel(e.target.value)}>
+                    <option>{subject?.level}</option>
+                    {levels.filter((level) => level !== subject?.level) 
+                      .map((level) => (
+                        <option key={level} defaultValue={level}>
+                          {level}
+                        </option>
+                      ))}
+                  </Select>
+                  <Label>Horas</Label>
+                  <TextInput placeholder="Horas" defaultValue={subject?.hours} className="w-full" type="number" onChange={(e) => setHours(Number(e.target.value))} />
+                  <Label>Precio</Label>
+                  <TextInput placeholder="precio" defaultValue={subject?.price} className="w-full" type="number" onChange={(e) => setPrice(Number(e.target.value))} />
               </div>
             </div>
             <div className="flex flex-col w-full gap-2">
-              <div className="flex flex-col w-full gap-2">
-                <Button color="danger">Desactivar curso</Button>
-                <Button color="primary" variant="bordered" isDisabled>Activar curso</Button>
+              <div className="flex flex-row w-full gap-2">
+                <Button color="danger" isDisabled = {!subject?.is_active} onClick={disableSubject}>Desactivar curso</Button>
+                <Button color="primary"  isDisabled = {subject?.is_active} onClick={enableSubject}>Activar curso</Button>
               </div>
               <div className="flex flex-row w-full gap-2">
-                <Button color="primary" className="w-1/2">Guardar</Button>
+                <Button color="primary" className="w-1/2" onClick={handleSave}>Guardar</Button>
                 <Button color="primary" variant="bordered" className="w-1/2" disabled>Cancelar</Button>
               </div>
             </div>
         </Card>
 
         <Card className="flex flex-col w-3/4 overflow-y-scroll">
-            <h1 className="font-bold text-xl">Sesiones</h1>
+            <h1 className="font-bold text-xl">Secciones</h1>
             <Card className="w-full overflow-x-scroll overflow-y-scroll">
                 <Table>
                     <Table.Head>

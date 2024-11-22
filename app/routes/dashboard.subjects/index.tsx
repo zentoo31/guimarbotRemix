@@ -1,11 +1,12 @@
 import { MetaFunction } from "@remix-run/react"
 import { Card, Table } from "flowbite-react";
-import { Button, Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import { Button, Modal, ModalContent, useDisclosure, Chip } from "@nextui-org/react";
 import { HiPlus, HiBookOpen} from "react-icons/hi";
 import SubjectCreate from "./subjectCreate";
 import SubjectDetail from "./subjectDetail";
 import RouteCreate from "./routeCreate";
 import RouteDetail from "./routeDetail";
+import SessionCreate from "./sessionCreate";
 import { useEffect, useState } from "react";
 import { SubjectService } from "~/services/subject.service";
 import { Subject } from "~/models/subject";
@@ -15,7 +16,6 @@ export const meta: MetaFunction = () => {
     {title: "Gestor de cursos | Guimarbot administrativo"}
   ]
 }
-
 
 const rutas = [
   {
@@ -101,21 +101,25 @@ const rutas = [
 ];
 
 
+
 function Index() {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onOpenChange: onCreateModalChange } = useDisclosure();
-  const {isOpen: isCreateRoute, onOpen: onCreateRoute, onOpenChange: onCreateRouteChange} = useDisclosure();
+  const { isOpen: isCreateSession, onOpen: onCreateSession, onOpenChange: onCreateSessionChange } = useDisclosure();
+  const { isOpen: isCreateRoute, onOpen: onCreateRoute, onOpenChange: onCreateRouteChange} = useDisclosure();
   const { isOpen: isEditRoute, onOpen: onEditeRoute, onOpenChange: onEditRouteChange } = useDisclosure();
+  const [cursoId, setCursoId] = useState<string>("");
+
 
   const [subjects, setSubjects] = useState<Subject[] | null>(null); 
-
-  useEffect(() => {
-    const loadSubjects = async () => {
-      const subjectService = new SubjectService();
-      const subjects = await subjectService.getSubjects();
-      setSubjects(subjects);
-      console.log(subjects);      
-    }
+  
+  const loadSubjects = async () => {
+    const subjectService = new SubjectService();
+    const subjects = await subjectService.getSubjects();      
+    setSubjects(subjects);
+  }
+  
+  useEffect(() => {  
     loadSubjects();
   }, []);
 
@@ -124,8 +128,9 @@ function Index() {
         <Card>
           <div className="flex flex-row justify-between">
             <h1 className="font-bold text-xl flex flex-row gap-2 items-center">Cursos <HiBookOpen className="w-5 h-5" opacity={0.5}/> </h1>
-            <div className="flex flex-row">
+            <div className="flex flex-row gap-5">
               <Button color="primary" className="flex flex-row" onPress={onCreateModalOpen}> <HiPlus className="w-5 h-5"/> Agregar curso</Button>
+              <Button color="primary" className="flex flex-row" onPress={onCreateSession}> <HiPlus className="w-5 h-5"/> Subir sesión</Button>
             </div>
           </div>
           <div className="overflow-x-scroll overflow-y-scroll max-h-[50vh]">
@@ -145,9 +150,9 @@ function Index() {
               <Table.HeadCell>uuid</Table.HeadCell>
               <Table.HeadCell>Nombre</Table.HeadCell>
               <Table.HeadCell>Autor</Table.HeadCell>
-              <Table.HeadCell>Level</Table.HeadCell>
+              <Table.HeadCell>Nivel</Table.HeadCell>
               <Table.HeadCell>Fecha de creación</Table.HeadCell>
-              <Table.HeadCell>Ruta</Table.HeadCell>
+              <Table.HeadCell>Estado</Table.HeadCell>
               <Table.HeadCell>Acción</Table.HeadCell>
               <Table.HeadCell>
                 <span className="sr-only">Edit</span>
@@ -161,9 +166,13 @@ function Index() {
                   <Table.Cell>{curso.author}</Table.Cell>
                   <Table.Cell>{curso.level}</Table.Cell>
                   <Table.Cell>{curso.created_at}</Table.Cell>
-                  <Table.Cell>{curso.level}</Table.Cell>
+                  <Table.Cell>{curso.is_active ?  (<Chip variant="dot" color="success">Activado</Chip>)
+                : ( <Chip color="danger" variant="dot">Desactivado</Chip>)}</Table.Cell>
                   <Table.Cell>
-                    <Button onPress={onOpen} className="font-mediu" color="primary">editar</Button>
+                    <Button onPress={()=>{
+                      setCursoId(curso._id);
+                      onOpen();
+                    }} className="font-mediu" color="primary">editar</Button>
                   </Table.Cell>
                 </Table.Row>
               ))}
@@ -173,7 +182,7 @@ function Index() {
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>
-                <SubjectDetail/>
+                <SubjectDetail subjectId={cursoId}/>
                 </>
               )}
             </ModalContent>
@@ -188,6 +197,17 @@ function Index() {
               )}
             </ModalContent>
           </Modal>
+
+          <Modal isOpen={isCreateSession} onOpenChange={onCreateSessionChange} backdrop="blur" size="full">
+            <ModalContent className="bg-[#111827]" >
+              { () =>(
+                <>
+                 <SessionCreate/>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
+
           </div>
         </Card>
         

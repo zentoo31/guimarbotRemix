@@ -10,5 +10,6 @@ export interface Subject{
     hours: number;
     price: number;
     tags: string[];
+    is_active: boolean;
     created_at: string;
 }
