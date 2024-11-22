@@ -131,7 +131,7 @@ function SessionCreate() {
                   value={selectedSection || ""} 
                   onChange={(e) => {
                     setSelectedSection(e.target.value);
-                    console.log("Sección seleccionada:", e.target.value); // Para depuración
+                    console.log("Sección seleccionada:", e.target.value);
                   }}
                 >
                   {sections && sections.length > 0 ? (
