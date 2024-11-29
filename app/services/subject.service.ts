@@ -47,6 +47,29 @@ export class SubjectService{
         }
     }
 
+    async getSubjectByTitle(title: string): Promise<Subject>{
+        try{
+            const response = await fetch(`${this.baseURL}/get-title/${title}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok){
+                throw new Error("Error al obtener la materia");
+            }
+
+            const subject: Subject = await response.json();
+            return subject;
+        }catch(error){
+            console.error("Error en la petición:", error);
+            throw error;
+        }
+    }
+
+
     async createSubject(subject: Subject){
         try{
             const response = await fetch(`${this.baseURL}/create`, {
