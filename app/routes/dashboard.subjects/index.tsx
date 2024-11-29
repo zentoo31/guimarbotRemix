@@ -7,7 +7,7 @@ import SubjectDetail from "./subjectDetail";
 import RouteCreate from "./routeCreate";
 import RouteDetail from "./routeDetail";
 import SessionCreate from "./sessionCreate";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SubjectService } from "~/services/subject.service";
 import { Subject } from "~/models/subject";
 
@@ -101,27 +101,33 @@ const rutas = [
 ];
 
 
-
 function Index() {
+  const subjectService = new SubjectService();
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onOpenChange: onCreateModalChange } = useDisclosure();
   const { isOpen: isCreateSession, onOpen: onCreateSession, onOpenChange: onCreateSessionChange } = useDisclosure();
   const { isOpen: isCreateRoute, onOpen: onCreateRoute, onOpenChange: onCreateRouteChange} = useDisclosure();
   const { isOpen: isEditRoute, onOpen: onEditeRoute, onOpenChange: onEditRouteChange } = useDisclosure();
   const [cursoId, setCursoId] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [subjects, setSubjects] = useState<Subject[] | null>(null);   
 
-
-  const [subjects, setSubjects] = useState<Subject[] | null>(null); 
-  
   const loadSubjects = async () => {
-    const subjectService = new SubjectService();
     const subjects = await subjectService.getSubjects();      
     setSubjects(subjects);
+  };
+
+  const loadSubjectsByTitle = async () => {
+    const subjects = await subjectService.getSubjectsByTitle(title);      
+    setSubjects(subjects);
   }
-  
-  useEffect(() => {  
+
+
+  if (title == "" || title === null) {
     loadSubjects();
-  }, []);
+  }else{
+    loadSubjectsByTitle();
+  }
 
   return (
     <div className="w-full animate-fade-in-down flex flex-col gap-4">
@@ -142,7 +148,7 @@ function Index() {
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                 </svg>
               </div>
-              <input type="text" id="table-search" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar por uuid o nombre" />
+              <input type="text" id="table-search" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar por uuid o nombre" onChange={(e) => {setTitle(e.target.value)}} />
             </div>
           </div>
           <Table>
