@@ -215,6 +215,7 @@ function Index() {
               <Table.HeadCell>Nombre</Table.HeadCell>
               <Table.HeadCell>Descripcion</Table.HeadCell>
               <Table.HeadCell>Fecha de creación</Table.HeadCell>
+              <Table.HeadCell>Estado</Table.HeadCell>
               <Table.HeadCell>Acción</Table.HeadCell>
               <Table.HeadCell>
                 <span className="sr-only">Edit</span>
@@ -227,8 +228,11 @@ function Index() {
                   <Table.Cell>{ruta.title}</Table.Cell>
                   <Table.Cell>{ruta.description}</Table.Cell>
                   <Table.Cell>{ruta.created_at}</Table.Cell>
+                  <Table.Cell>{ruta.is_active ?  (<Chip variant="dot" color="success">Activado</Chip>)
+                      : ( <Chip color="danger" variant="dot">Desactivado</Chip>)}</Table.Cell>
+                        <Table.Cell></Table.Cell>
                   <Table.Cell>
-                    <Button onPress={onEditeRoute} className="font-mediu flex flex-row gap-2" color="primary"><HiPencil className="w-5 h-5" opacity={0.5}/>  editar</Button>
+                    <Button onPress={onEditeRoute} className="font-medium flex flex-row gap-2" color="primary"><HiPencil className="w-5 h-5" opacity={1}/>Editar</Button>
                   </Table.Cell>
                 </Table.Row>
               ))}
