@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 import { SectionService } from "~/services/section.service";
 import { Section } from "~/models/section";
 import { SessionService } from "~/services/session.service";
+import SearchBar from "./searchBar";
 
 function SessionCreate() {
   const sectionService = new SectionService();
   const sessionService = new SessionService();
+  const [selectedValue, setSelectedValue] = useState<string | null>(null);
+
   const [titleSection, setTitleSection] = useState("");
   const [subject_id, setSubject_id] = useState("");
   const [video, setVideo] = useState<string | null>(null);
@@ -18,9 +21,15 @@ function SessionCreate() {
 
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
 
+  const handleSelection = (value: string | null) => {
+    setSelectedValue(value);
+    setSubject_id(value || "");
+    console.log("Valor seleccionado:", value);
+  };
+
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSection(event.target.value);
-    console.log("Sección seleccionada:", event.target.value); // Verifica que se guarde correctamente
+    console.log("Sección seleccionada:", event.target.value); 
   };
 
   const extractVideoId = (url: string) => {
@@ -36,8 +45,13 @@ function SessionCreate() {
   };
 
   const saveSection = async () => {
-    if (!titleSection || !subject_id) {
-      alert("Por favor, completa todos los campos.");
+    if (!titleSection) {
+      alert("Por favor, pon titulo");
+      return;
+    }
+
+    if (!subject_id) {
+      alert("Por favor, selecciona una materia.");
       return;
     }
 
@@ -90,7 +104,7 @@ function SessionCreate() {
       const newSession = {
         _id: "",
         title: titleSession,
-       description,
+        description,
         video: video || "",
         section_id: selectedSection ,
       };
@@ -103,7 +117,6 @@ function SessionCreate() {
     }
   }
 
-
   useEffect(() => {
     if (subject_id) { 
       loadSections();
@@ -114,8 +127,7 @@ function SessionCreate() {
     <div className="w-full p-10 flex flex-row gap-2">
         <Card className="flex flex-col items-center text-start justify-between w-1/4">
                 <h1 className="font-bold text-xl text-start">Curso</h1>
-                <TextInput placeholder="cursos" className="w-full" onChange={(e) => setSubject_id(e.target.value)}/>
-                <Button color="primary" className="w-full">Buscar</Button>
+                <SearchBar onSelect={handleSelection}/>            
                 <h1 className="font-bold text-xl text-start">Registrar Sección</h1>
                 <div className="flex flex-col gap-2 justify-start items-start">
                     <Label>Nombre de la sección</Label>
