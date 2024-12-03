@@ -4,4 +4,5 @@ export interface Session{
     title: string;
     description: string;
     video: string;
+    section_title?: string;
 }

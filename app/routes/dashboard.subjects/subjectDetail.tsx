@@ -3,31 +3,21 @@ import { Card, TextInput, Label, Table, Select, FileInput, Textarea } from "flow
 import { Button, Image, Chip } from "@nextui-org/react"
 import { useEffect, useState } from "react";
 import { SubjectService } from "~/services/subject.service";
+import { SessionService } from "~/services/session.service";
 import { Subject } from "~/models/subject";
+import { Session } from "~/models/session";
 import UploadWidget from "./uploadWidget";
-
-const sesiones = [
-  {
-    nombre: 'Introducción a Angular',
-    dificultad: 'Principiante',
-    autores: ['Carlos Pérez', 'María López'],
-    numeroSesion: 1,
-  },
-  {
-    nombre: 'Componentes y Plantillas en Angular',
-    dificultad: 'Principiante',
-    autores: ['Ana García', 'Luis Martínez'],
-    numeroSesion: 2,
-  }
-];
 
 interface subjectDetailProps{
   subjectId: string;
 }
 
 function SubjectDetail({subjectId}: subjectDetailProps) {  
-  const [subject, setSubject] = useState<Subject | null>(null);
+  const subjectService = new SubjectService();
+  const sessionService = new SessionService();
 
+  const [subject, setSubject] = useState<Subject | null>(null);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -35,17 +25,13 @@ function SubjectDetail({subjectId}: subjectDetailProps) {
   const [level, setLevel] = useState("Facil");
   const [hours, setHours] = useState<number | null>(null);
   const [price, setPrice] = useState<number | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [tags, setTags] = useState<string[]>([]); 
   const [banner, setBanner] = useState<string | null>(null);
-
-
   const levels = ["Facil", "Avanzado", "Medio"];
 
   const handleUploadSuccessImage = (uploadedUrl: string) => {
     setImage(uploadedUrl);
   };
-  const subjectService = new SubjectService();
 
   const loadSubject =  async () => {
     try {
@@ -63,10 +49,6 @@ function SubjectDetail({subjectId}: subjectDetailProps) {
       console.error("Error al cargar el curso:", error);
     }
   }
-
-  useEffect(() => {
-    loadSubject();
-  }, [])
 
   const disableSubject = async  () => {
     try {
@@ -120,6 +102,19 @@ function SubjectDetail({subjectId}: subjectDetailProps) {
     }
   }
 
+  const loadSessions = async () => {
+    try {
+      const sessions = await sessionService.getAllSessionsBySubject(subjectId);
+      setSessions(sessions);
+    } catch (error) {
+      console.error("Error al cargar las sesiones:", error);
+    }
+  }
+  
+  useEffect(() => {
+    loadSubject();
+    loadSessions();
+  }, [])
 
   return (
     <div className="w-full p-10 flex flex-row gap-2">
@@ -181,25 +176,24 @@ function SubjectDetail({subjectId}: subjectDetailProps) {
         </Card>
 
         <Card className="flex flex-col w-3/4 overflow-y-scroll">
-            <h1 className="font-bold text-xl">Secciones</h1>
+            <h1 className="font-bold text-xl">Sessiones</h1>
             <Card className="w-full overflow-x-scroll overflow-y-scroll">
                 <Table>
                     <Table.Head>
-                    <Table.HeadCell>Nombre</Table.HeadCell>
-                    <Table.HeadCell>Autores</Table.HeadCell>
-                    <Table.HeadCell>Dificultad</Table.HeadCell>
-                    <Table.HeadCell>Nro de sesion</Table.HeadCell>
+                    <Table.HeadCell>ID</Table.HeadCell>
+                    <Table.HeadCell>Seccion</Table.HeadCell>
+                    <Table.HeadCell>Título</Table.HeadCell>
+                    <Table.HeadCell>Video</Table.HeadCell>
                     <Table.HeadCell>
                         <span className="sr-only">Edit</span>
                     </Table.HeadCell>
                     </Table.Head>
                     <Table.Body className="divide-y">
-                    {sesiones.map((sesion) => (
-                        <Table.Row key={sesion.nombre} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                            <Table.Cell>{sesion.nombre}</Table.Cell>
-                            <Table.Cell>{sesion.autores}</Table.Cell>
-                            <Table.Cell>{sesion.dificultad}</Table.Cell>
-                            <Table.Cell>{sesion.numeroSesion}</Table.Cell>
+                    {sessions.map((sesion) => (
+                        <Table.Row key={sesion._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                            <Table.Cell>{sesion.section_title}</Table.Cell>
+                            <Table.Cell>{sesion.title}</Table.Cell>
+                            <Table.Cell>{sesion.video}</Table.Cell>
                         </Table.Row>
                     ))}
                     </Table.Body>

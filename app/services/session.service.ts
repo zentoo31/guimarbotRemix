@@ -87,4 +87,23 @@ export class SessionService{
         }
     }
 
+    async getAllSessionsBySubject(subject_id: string){
+        try{
+            const response = await fetch(`${this.baseURL}/get-sessions-subject/${subject_id}`, {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (!response.ok){
+                throw new Error("Error al obtener las sesiones");
+            }
+
+            const sessions: Session[] = await response.json();
+            return sessions;
+        }catch(error){
+            console.error("Error en la petición:", error);
+            throw error;
+        }
+    }
+
 }
