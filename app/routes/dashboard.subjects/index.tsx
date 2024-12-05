@@ -32,7 +32,7 @@ function Index() {
   const { isOpen: isCreateSession, onOpen: onCreateSession, onOpenChange: onCreateSessionChange } = useDisclosure();
   const { isOpen: isCreateRoute, onOpen: onCreateRoute, onOpenChange: onCreateRouteChange} = useDisclosure();
   const { isOpen: isEditRoute, onOpen: onEditeRoute, onOpenChange: onEditRouteChange } = useDisclosure();
-   const [cursoId, setCursoId] = useState<string>("");
+  const [cursoId, setCursoId] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [routeTitle, setRouteTitle] = useState<string>("");
   const [subjects, setSubjects] = useState<Subject[] | null>(null);

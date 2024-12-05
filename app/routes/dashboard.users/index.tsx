@@ -74,7 +74,8 @@ function Index() {
   const userService = new UserService();
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onOpenChange: onCreateModalChange } = useDisclosure();
-  const [users, setUsers] = useState<User[]>([]);
+  const [idUser, setIdUser] = useState<string>("");
+  const [users, setUsers] = useState<User[] | null>(null);
   const [userSearch, setUserSearch] = useState<string>("");
   const [isLoadingUsers, setLoadingUsers] = useState(false);
 
@@ -135,7 +136,7 @@ function Index() {
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {users.map((usuario) => (
+              {users?.map((usuario) => (
                 <Table.Row key={usuario._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                   <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">{usuario.first_name}</Table.Cell>
                   <Table.Cell>{usuario.last_name}</Table.Cell>
@@ -144,7 +145,12 @@ function Index() {
                   <Table.Cell>{usuario.email}</Table.Cell>
                   <Table.Cell>{usuario.role}</Table.Cell>
                   <Table.Cell>
-                  <Button onPress={onOpen} className="font-medium flex flex-row gap-2" color="primary"><HiPencil className="w-5 h-5" opacity={1}/>Editar</Button>
+                  <Button onPress={
+                    () => {
+                      setIdUser(usuario._id);
+                      onOpen();
+                    }
+                    } className="font-medium flex flex-row gap-2" color="primary"><HiPencil className="w-5 h-5" opacity={1}/>Editar</Button>
                   </Table.Cell>
                 </Table.Row>
               ))}
@@ -163,7 +169,7 @@ function Index() {
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>
-                  <UserDetail/>
+                  <UserDetail userID={idUser}/>
                 </>
               )}
             </ModalContent>

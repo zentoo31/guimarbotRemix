@@ -1,7 +1,10 @@
 import { Card, TextInput, Label, Table, Select } from "flowbite-react"
-import { Button, DatePicker } from "@nextui-org/react"
+import { Button, DatePicker, Image } from "@nextui-org/react"
 import {HiMail} from "react-icons/hi"
 import { parseAbsoluteToLocal} from "@internationalized/date";
+import { UserService } from "~/services/user.service";
+import { useState, useEffect } from "react";
+import { User } from "~/models/user";
 
 const suscripciones = [
     {
@@ -34,7 +37,14 @@ const suscripciones = [
     },
   ];
 
-function UserDetail() {
+interface userDetailProps{
+  userID: string;
+}
+
+
+function UserDetail({userID}: userDetailProps) {
+  const userService = new UserService();
+  const [user, setUser] = useState<User | null>(null);
   const handleCopy = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
     navigator.clipboard.writeText(target.innerText)
@@ -46,23 +56,36 @@ function UserDetail() {
       });
   };
 
+  const loadUser = async () => {
+    try{
+      const user = await userService.getUserById(userID);
+      setUser(user);
+    }catch(error){
+      console.error("Error al cargar el usuario:", error);
+    }
+  }
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
   return (
     <div className="w-full p-10 flex flex-row gap-2">
         <Card className="flex flex-col items-center text-center justify-between w-1/4">
           <div>
             <div className="w-full flex flex-row items-center justify-center"> 
-              <img src="https://i.pravatar.cc/250" alt="" className="rounded-full w-40 h-40"/>
+              <Image src={user?.profile_picture} alt="" className="rounded-full w-40 h-40"/>
               </div>
               <h1 className="font-bold text-xl">Información de perfil</h1>
               <div className="flex flex-col text-start items-start gap-2 ">
-                  <Label>Nombre</Label>
-                  <TextInput placeholder="Nombre" defaultValue={"Lorem impsun"} className="w-full"/>
+                  <Label>Nombres</Label>
+                  <TextInput placeholder="Nombre" defaultValue={user?.first_name} className="w-full"/>
                   <Label>Apellidos</Label>
-                  <TextInput placeholder="Nombre" defaultValue={"Lorem impsun"} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={user?.last_name} className="w-full"/>
                   <Label>Usuario</Label>
-                  <TextInput placeholder="Nombre" defaultValue={"user123"} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={user?.username} className="w-full"/>
                   <Label>Correo</Label>
-                  <TextInput placeholder="Nombre" defaultValue={"user@example.com"} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={user?.email} className="w-full"/>
                   <div className="flex flex-row items-end gap-2 w-full">
                       <div >
                           <Label>Contraseña</Label>
