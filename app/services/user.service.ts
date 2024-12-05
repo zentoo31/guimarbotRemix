@@ -3,6 +3,29 @@ import { User } from "~/models/user";
 export class UserService{
     private baseURL = "http://localhost:3000/api/admin-user-manage";
 
+    async createUser(user: User): Promise<User>{
+        try{
+            const response = await fetch(`${this.baseURL}/create`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(user),
+            });
+
+            if (!response.ok){
+                throw new Error("Error al crear el usuario");
+            }
+
+            const newUser: User = await response.json();
+            return newUser;
+        }catch(error){
+            console.error( error);
+            throw error;
+        }
+    }
+
     async getUsers(): Promise<User[]>{
         try{
             const response = await fetch(`${this.baseURL}/get-all`, {

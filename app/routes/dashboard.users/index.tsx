@@ -13,8 +13,8 @@ import {
 import { faker } from '@faker-js/faker';
 import { Card, Table } from "flowbite-react";
 import { Line } from "react-chartjs-2";
-import { Button, Modal, ModalContent, useDisclosure } from "@nextui-org/react";
-import {HiUsers, HiPlus} from "react-icons/hi";
+import { Button, Modal, ModalContent, useDisclosure, Spinner } from "@nextui-org/react";
+import {HiUsers, HiPlus, HiPencil} from "react-icons/hi";
 import UserDetail from "./userDetail";
 import UserCreate from "./userCreate";
 import { UserService } from "~/services/user.service";
@@ -70,6 +70,7 @@ export const meta: MetaFunction = () => {
 
 
 function Index() {
+  const MIN_ROWS = 15;
   const userService = new UserService();
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onOpenChange: onCreateModalChange } = useDisclosure();
@@ -115,6 +116,12 @@ function Index() {
               <input type="text" id="table-search" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar por usuario" onChange={(e) => {setUserSearch(e.target.value)}} />
             </div>
           </div>
+          { isLoadingUsers ? (
+            <div className="w-full h-[50vh] flex flex-row items-center justify-center">
+            <Spinner label="Cargando..." color="primary" labelColor="primary" className=""></Spinner>
+          </div>
+          ): 
+        ( 
           <Table>
             <Table.Head>
               <Table.HeadCell>Nombre</Table.HeadCell>
@@ -137,12 +144,21 @@ function Index() {
                   <Table.Cell>{usuario.email}</Table.Cell>
                   <Table.Cell>{usuario.role}</Table.Cell>
                   <Table.Cell>
-                    <Button onPress={onOpen} className="font-mediu" color="primary">editar</Button>
+                  <Button onPress={onOpen} className="font-medium flex flex-row gap-2" color="primary"><HiPencil className="w-5 h-5" opacity={1}/>Editar</Button>
                   </Table.Cell>
                 </Table.Row>
               ))}
+
+              {Array.from({ length: Math.max(0, MIN_ROWS - (users?.length || 0)) }).map((_, index) => (
+                  <Table.Row key={`empty-${index}`} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell colSpan={7} className="text-center text-gray-500 py-4">
+                        {}
+                    </Table.Cell>
+                  </Table.Row>
+              ))}
             </Table.Body>
           </Table>
+        )}
           <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur" size="full">
             <ModalContent className="bg-[#111827]" >
               { () =>(
@@ -153,7 +169,7 @@ function Index() {
             </ModalContent>
           </Modal>
 
-          <Modal isOpen={isCreateModalOpen} onOpenChange={onCreateModalChange} backdrop="blur" size="5xl">
+          <Modal isOpen={isCreateModalOpen} onOpenChange={onCreateModalChange} backdrop="blur" size="5xl" portalContainer={document.body}>
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>

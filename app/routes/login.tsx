@@ -1,10 +1,11 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Button } from "@nextui-org/react";
-import { TextInput, Label, Toast } from "flowbite-react";
-import { HiMail, HiLockClosed, HiCheck } from "react-icons/hi";
+import { TextInput, Label } from "flowbite-react";
+import { HiMail, HiLockClosed } from "react-icons/hi";
 import { useNavigate } from "@remix-run/react";
 import { useState } from "react";
 import { AuthService } from "~/services/auth.service";
+import CustomToast from "~/ui-components/customToast";
 
 export const meta: MetaFunction = () => {
   return [
@@ -14,9 +15,10 @@ export const meta: MetaFunction = () => {
 };
 
 function Login() {
+  const [showToast, setShowToast] = useState(false);
+  const [toastProps, setToastProps] = useState({ message: "", success: false });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showToast, setShowToast] = useState(false);  
   const [isLoading, setIsLoading] = useState(false);
   const authService = new AuthService();
   const navigate = useNavigate();
@@ -28,17 +30,22 @@ function Login() {
     try {
       const data = await authService.login(email, password);
       if (data.message === "Administrador autenticado") {
-        setShowToast(true);
+        setToastProps({ message: "Usuario creado correctamente", success: true });
         setTimeout( () =>{
-          setShowToast(false);
           navigate("/dashboard");
         }, 500);
       }
     } catch (error) {
       console.error(error);
+      setToastProps({ message: "Error al iniciar sesión", success: false });
     } finally{
       setIsLoading(false);
     }
+
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
   };
 
     return (
@@ -61,20 +68,7 @@ function Login() {
         </form>
       </div> 
 
-      { showToast && (
-        <div className="absolute bottom-5 right-5">
-          <Toast className="animate-fade-in-up">
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
-              <HiCheck className="h-5 w-5" />
-            </div>
-            <div className="ml-3 text-sm font-normal">
-              Sesión iniciada exitosamente.
-            </div>
-            <Toast.Toggle />
-          </Toast>
-        </div>
-      )}
-
+      {showToast && <CustomToast {...toastProps} />}
 
     </div>
   )

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Subject } from "~/models/subject";
 import { SubjectService } from "~/services/subject.service";
+import { Image } from "@nextui-org/react";
 
 interface SearchBarProps {
-  onSelect?: (selectedId: string | null) => void; // Callback para emitir el ID al padre
+  onSelect?: (selectedId: string | null) => void; 
 }
 
 function SearchBar({ onSelect }: SearchBarProps) {
@@ -14,7 +15,6 @@ function SearchBar({ onSelect }: SearchBarProps) {
 
   const subjectService = new SubjectService();
 
-  // Buscar materias en el servidor
   useEffect(() => {
     const fetchSubjects = async () => {
       if (!searchQuery.trim()) {
@@ -131,7 +131,7 @@ function SearchBar({ onSelect }: SearchBarProps) {
       {/* Mostrar materia seleccionada */}
       {selectedSubject && (
         <div className="mt-4 flex items-center gap-4 bg-[#374151] text-gray-400 px-4 py-2 rounded-lg">
-          <img
+          <Image
             src={selectedSubject.image}
             alt={selectedSubject.title}
             className="w-12 h-12 object-cover rounded-full"

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {Card, Label, Select, TextInput, FileInput, Textarea } from "flowbite-react"
 import { Button } from "@nextui-org/react"
 import { useEffect, useState } from "react";
