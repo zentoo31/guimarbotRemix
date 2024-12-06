@@ -11,7 +11,7 @@ type ToastProps = {
 function CustomToast({ message, success }: ToastProps) {
   useEffect(()=> {
     const sound = new Audio(success ? "/audio/success_sound.mp3" : "/audio/unsucess_sound.mp3");
-    sound.volume = 0.1;
+    sound.volume = 1;
     sound.play();
   }, [success]);
 
