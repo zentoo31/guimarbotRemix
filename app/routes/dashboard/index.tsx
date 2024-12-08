@@ -100,7 +100,7 @@ function Index() {
               />
             </svg>
           </button>
-          <Link to="/" className="flex ms-2 md:me-24">
+          <Link to="/dashboard/default" className="flex ms-2 md:me-24">
             <img
               src="/favicon.ico"
               className="h-8 me-3"
