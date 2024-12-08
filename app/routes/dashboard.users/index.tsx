@@ -128,7 +128,7 @@ function Index() {
               <Table.HeadCell>Nombre</Table.HeadCell>
               <Table.HeadCell>Apellido</Table.HeadCell>
               <Table.HeadCell>Usuario</Table.HeadCell>
-              <Table.HeadCell>Fecha de Nacimiento</Table.HeadCell>
+              <Table.HeadCell>ID</Table.HeadCell>
               <Table.HeadCell>Email</Table.HeadCell>
               <Table.HeadCell>Rol</Table.HeadCell>
               <Table.HeadCell>
@@ -141,7 +141,7 @@ function Index() {
                   <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">{usuario.first_name}</Table.Cell>
                   <Table.Cell>{usuario.last_name}</Table.Cell>
                   <Table.Cell>{usuario.username}</Table.Cell>
-                  <Table.Cell>{usuario.birthdate}</Table.Cell>
+                  <Table.Cell>{usuario._id}</Table.Cell>
                   <Table.Cell>{usuario.email}</Table.Cell>
                   <Table.Cell>{usuario.role}</Table.Cell>
                   <Table.Cell>

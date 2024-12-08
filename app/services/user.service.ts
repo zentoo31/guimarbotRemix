@@ -25,6 +25,29 @@ export class UserService{
             throw error;
         }
     }
+    
+    async updateUser(user: User): Promise<User>{
+        try{
+            const response = await fetch(`${this.baseURL}/update/${user._id}`, {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(user),
+            });
+
+            if (!response.ok){
+                throw new Error("Error al actualizar el usuario");
+            }
+
+            const updatedUser: User = await response.json();
+            return updatedUser;
+        }catch(error){
+            console.error( error);
+            throw error;
+        }
+    }
 
     async getUsers(): Promise<User[]>{
         try{

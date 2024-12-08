@@ -45,6 +45,13 @@ interface userDetailProps{
 function UserDetail({userID}: userDetailProps) {
   const userService = new UserService();
   const [user, setUser] = useState<User | null>(null);
+  const [username, setUsername] = useState<string>("");
+  const [first_name, setFirst_name] = useState<string>("");
+  const [last_name, setLast_name] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [birthdate, setBirthdate] = useState<string>("");
+  const [role, setRole] = useState<string>("");
+
   const handleCopy = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
     navigator.clipboard.writeText(target.innerText)
@@ -56,10 +63,41 @@ function UserDetail({userID}: userDetailProps) {
       });
   };
 
+  const updateUser = async () => {
+    if (!first_name || !last_name || !username || !email || !role) {
+      alert("Por favor, llena todos los campos");
+      return;
+    }
+
+    const updatedUser: User = {
+      _id: userID,
+      first_name,
+      last_name,
+      username,
+      birthdate,
+      email,
+      role
+    };
+
+    try {
+      await userService.updateUser(updatedUser);
+      console.log("Usuario actualizado correctamente");
+    } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+    }
+  }
+
+
   const loadUser = async () => {
     try{
       const user = await userService.getUserById(userID);
       setUser(user);
+      setUsername(user.username);
+      setFirst_name(user.first_name);
+      setLast_name(user.last_name);
+      setEmail(user.email);
+      setRole(user.role || "");
+      setBirthdate(user.birthdate || "");
     }catch(error){
       console.error("Error al cargar el usuario:", error);
     }
@@ -79,13 +117,20 @@ function UserDetail({userID}: userDetailProps) {
               <h1 className="font-bold text-xl">Información de perfil</h1>
               <div className="flex flex-col text-start items-start gap-2 ">
                   <Label>Nombres</Label>
-                  <TextInput placeholder="Nombre" defaultValue={user?.first_name} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={user?.first_name} className="w-full" onChange={(e) => setFirst_name(e.target.value)}/>
                   <Label>Apellidos</Label>
-                  <TextInput placeholder="Nombre" defaultValue={user?.last_name} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={user?.last_name} className="w-full"  onChange={(e) => setLast_name(e.target.value)}/>
                   <Label>Usuario</Label>
-                  <TextInput placeholder="Nombre" defaultValue={user?.username} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={user?.username} className="w-full"  onChange={(e) => setUsername(e.target.value)}/>
                   <Label>Correo</Label>
-                  <TextInput placeholder="Nombre" defaultValue={user?.email} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={user?.email} className="w-full"  onChange={(e) => setEmail(e.target.value)}/>
+                  <Label>Rol</Label>
+                  <div className="w-full">
+                      <Select onChange={(e) => {setRole(e.target.value)}} value={user?.role}>
+                        <option>teacher</option>
+                        <option>student</option>
+                      </Select> 
+                  </div>
                   <div className="flex flex-row items-end gap-2 w-full">
                       <div >
                           <Label>Contraseña</Label>
@@ -103,7 +148,7 @@ function UserDetail({userID}: userDetailProps) {
                 <Button color="primary" variant="bordered" isDisabled>Activar cuenta</Button>
               </div>
               <div className="flex flex-row w-full gap-2">
-                <Button color="primary" className="w-1/2">Guardar</Button>
+                <Button color="primary" className="w-1/2" onClick={updateUser}>Guardar</Button>
                 <Button color="primary" variant="bordered" className="w-1/2" disabled>Cancelar</Button>
               </div>
             </div>
