@@ -1,9 +1,10 @@
 export interface Admin{
+    _id?: string;   
     username: string;
     email: string;
     password: string;
-    role: string;
+    role?: string;
     first_name: string;
     last_name: string;
-    profile_picture: string;
+    profile_picture?: string;
 }

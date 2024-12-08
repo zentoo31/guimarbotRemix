@@ -147,7 +147,7 @@ function Index() {
                   <Table.Cell>
                   <Button onPress={
                     () => {
-                      setIdUser(usuario._id);
+                      setIdUser(usuario._id || "");
                       onOpen();
                     }
                     } className="font-medium flex flex-row gap-2" color="primary"><HiPencil className="w-5 h-5" opacity={1}/>Editar</Button>
@@ -175,7 +175,7 @@ function Index() {
             </ModalContent>
           </Modal>
 
-          <Modal isOpen={isCreateModalOpen} onOpenChange={onCreateModalChange} backdrop="blur" size="5xl" portalContainer={document.body}>
+          <Modal isOpen={isCreateModalOpen} onOpenChange={onCreateModalChange} backdrop="blur" size="5xl" >
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>

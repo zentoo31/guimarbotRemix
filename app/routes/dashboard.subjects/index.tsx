@@ -216,7 +216,7 @@ function Index() {
               <Table.HeadCell>Descripcion</Table.HeadCell>
               <Table.HeadCell>Fecha de creación</Table.HeadCell>
               <Table.HeadCell>Estado</Table.HeadCell>
-              <Table.HeadCell>Acción</Table.HeadCell>
+              <Table.HeadCell></Table.HeadCell>
               <Table.HeadCell>
                 <span className="sr-only">Edit</span>
               </Table.HeadCell>
