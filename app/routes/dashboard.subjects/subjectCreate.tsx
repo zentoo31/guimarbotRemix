@@ -4,6 +4,7 @@ import { SubjectService } from "~/services/subject.service"
 import UploadWidget from "./uploadWidget"
 import { useState } from "react"
 import { Button, Image } from "@nextui-org/react"
+import { toast } from "react-toastify"
 
 function SubjectCreate() {
   const subjectService = new SubjectService();
@@ -29,7 +30,7 @@ function SubjectCreate() {
 
   const handleSave = async () => {
     if (!title || !author || !description || !hours || !price || !image || !banner) {
-      alert("Por favor, completa todos los campos.");
+      toast.warning("Por favor, completa todos los campos.");
       return;
     }
 
@@ -49,12 +50,10 @@ function SubjectCreate() {
       tags,
     };
     try {
-      const message = await subjectService.createSubject(newSubject);
-      console.log("Curso creado con éxito:", message);
-      alert("Curso creado con éxito");
+      await subjectService.createSubject(newSubject);
+      toast.success("Curso creado con éxito");
     } catch (error) {
-      console.error("Error al crear el curso:", error);
-      alert("Hubo un error al crear el curso.");
+      toast.error("Error al crear el curso:" + error);
     }
   };
 

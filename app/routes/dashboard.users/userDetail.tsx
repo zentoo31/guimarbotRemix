@@ -5,6 +5,7 @@ import { parseAbsoluteToLocal} from "@internationalized/date";
 import { UserService } from "~/services/user.service";
 import { useState, useEffect } from "react";
 import { User } from "~/models/user";
+import { toast } from "react-toastify";
 
 const suscripciones = [
     {
@@ -81,9 +82,9 @@ function UserDetail({userID}: userDetailProps) {
 
     try {
       await userService.updateUser(updatedUser);
-      console.log("Usuario actualizado correctamente");
+      toast.success("Usuario actualizado correctamente");
     } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
+      toast.error("Error al actualizar el usuario");
     }
   }
 

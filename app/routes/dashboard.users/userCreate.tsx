@@ -3,12 +3,10 @@ import { Button, Image } from "@nextui-org/react"
 import { UserService } from "~/services/user.service"
 import { User } from "~/models/user"
 import { useState } from "react"
-import CustomToast from "~/ui-components/customToast"
+import { toast } from "react-toastify"
 
 function UserCreate() {
   const userService = new UserService();
-  const [showToast, setShowToast] = useState(false);
-  const [toastProps, setToastProps] = useState({ message: "", success: false });
   const [first_name, setFirst_name] = useState<string>("");
   const [last_name, setLast_name] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -18,8 +16,9 @@ function UserCreate() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const createUser = async () => {
+    setRole("student");
     if (!first_name || !last_name || !username || !email || !role || !password) {
-      alert("Por favor, llena todos los campos");
+      toast.warning("Por favor, llena todos los campos");
       return;
     }
 
@@ -36,15 +35,13 @@ function UserCreate() {
 
     try {
       await userService.createUser(user);
-      setToastProps({ message: "Usuario creado correctamente", success: true });
+      toast.success("Usuario creado correctamente");
     } catch (error) {
-      setToastProps({ message: "Error al crear el usuario", success: false });
+      toast.error("Error al crear el usuario");
       console.error("Error al crear el usuario:", error);
     } finally {
       setLoading(false);
     }
-    setShowToast(true);
-    setTimeout(() => {setShowToast(false), 3000})
   }
 
   return (
@@ -67,8 +64,8 @@ function UserCreate() {
                   <Label>Tipo</Label>
                   <div className="w-full">
                       <Select onChange={(e) => {setRole(e.target.value)}}>
-                        <option>teacher</option>
                         <option>student</option>
+                        <option>teacher</option>
                       </Select> 
                   </div>
                   <div className="flex flex-row items-end gap-2 w-full">
@@ -87,7 +84,6 @@ function UserCreate() {
               </div>
             </div>
         </Card>
-        {showToast && <CustomToast {...toastProps} />}
     </div>
   )
 }

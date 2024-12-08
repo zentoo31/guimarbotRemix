@@ -7,6 +7,7 @@ import { SessionService } from "~/services/session.service";
 import { Subject } from "~/models/subject";
 import { Session } from "~/models/session";
 import UploadWidget from "./uploadWidget";
+import { toast } from "react-toastify";
 
 interface subjectDetailProps{
   subjectId: string;
@@ -46,33 +47,33 @@ function SubjectDetail({subjectId}: subjectDetailProps) {
       setImage(subject.image);
       setBanner(subject.banner );
     } catch (error) {
-      console.error("Error al cargar el curso:", error);
+      toast.error("Error al cargar el curso:" + error);
     }
   }
 
   const disableSubject = async  () => {
     try {
-      const message = await subjectService.disableSubject(subjectId);
-      alert("Curso desactivado con éxito");
+       await subjectService.disableSubject(subjectId);
+      toast.success("Curso desactivado con éxito");
       loadSubject();
     } catch (error) {
-      alert("Hubo un error al desactivar el curso.");
+      toast.error("Hubo un error al desactivar el curso.");
     }
   }
 
   const enableSubject = async () => {
     try {
-      const message = await subjectService.enableSubject(subjectId);
-      alert("Curso activado con éxito");
+      await subjectService.enableSubject(subjectId);
+      toast.success("Curso activado con éxito");
       loadSubject();
     } catch (error) {
-      alert("Hubo un error al activar el curso.");
+      toast.error("Hubo un error al activar el curso.");
     }
   }
 
   const handleSave = async () => {
     if (!title || !author || !description || !hours || !price || !image) {
-      alert("Por favor, completa todos los campos.");
+      toast.warning("Por favor, completa todos los campos.");
       return;
     }
 
@@ -92,13 +93,11 @@ function SubjectDetail({subjectId}: subjectDetailProps) {
       tags: subject?.tags ?? [],
     };
     try {
-      const message = await subjectService.updateSubject(newSubject);
-      console.log("Curso actualizado con éxito:", message);
-      alert("Curso actualizado con éxito");
+      await subjectService.updateSubject(newSubject);
+      toast.success("Curso actualizado con éxito");
       loadSubject();
     } catch (error) {
-      console.error("Error al crear el curso:", error);
-      alert("Hubo un error al crear el curso.");
+      toast.error("Error al crear el curso:" + error);
     }
   }
 

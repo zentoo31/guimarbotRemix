@@ -161,7 +161,7 @@ function Index() {
             </ModalContent>
           </Modal>
 
-          <Modal isOpen={isCreateModalOpen} onOpenChange={onCreateModalChange} backdrop="blur" size="full">
+          <Modal isOpen={isCreateModalOpen} onOpenChange={onCreateModalChange} backdrop="blur" size="4xl">
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>

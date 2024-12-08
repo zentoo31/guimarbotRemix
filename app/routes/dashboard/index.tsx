@@ -8,7 +8,7 @@ import { HiChartPie, HiMail, HiUsers, HiBookOpen, HiDocumentDuplicate, HiKey, Hi
 import {parseAbsoluteToLocal} from "@internationalized/date";
 import { AuthService } from "~/services/auth.service";
 import { AdminInfoService } from "~/services/admin.info.service";
-import CustomToast from "~/ui-components/customToast";
+import { toast } from "react-toastify";
 
 export const meta: MetaFunction = () => {
     return [
@@ -26,8 +26,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 function Index() {
-  const [showToast, setShowToast] = useState(false);
-  const [toastProps, setToastProps] = useState({ message: "", success: false });
   const location = useLocation();
   const [admin, setAdmin] = useState<Admin | null>(null); 
   const [isAuth, setIsAuth] = useState(null);
@@ -67,8 +65,7 @@ function Index() {
   const logout = async () => {
     const authService = new AuthService();
     const logoutStatus =  await authService.logout();
-    setToastProps({ message: "Sesiòn cerrada correctamente!", success: false });
-    setShowToast(true);
+    toast.success("Sesión cerrada correctamente!");
     console.log(logoutStatus);
     navigate("/login");
   };
@@ -297,7 +294,6 @@ function Index() {
           <Outlet/>
       </div>
     </div>
-    {showToast && <CustomToast {...toastProps} />}
   </div>
   )
 }

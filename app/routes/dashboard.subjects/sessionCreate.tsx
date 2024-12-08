@@ -6,6 +6,7 @@ import { SectionService } from "~/services/section.service";
 import { Section } from "~/models/section";
 import { SessionService } from "~/services/session.service";
 import SearchBar from "./searchBar";
+import { toast } from "react-toastify";
 
 function SessionCreate() {
   const sectionService = new SectionService();
@@ -47,12 +48,12 @@ function SessionCreate() {
 
   const saveSection = async () => {
     if (!titleSection) {
-      alert("Por favor, pon titulo");
+      toast.warning("Por favor, pon titulo");
       return;
     }
 
     if (!subject_id) {
-      alert("Por favor, selecciona una materia.");
+      toast.warning("Por favor, selecciona una materia.");
       return;
     }
 
@@ -62,12 +63,11 @@ function SessionCreate() {
       subject_id: subject_id,
     };
     try {
-      const message = await sectionService.createSection(newSection);
-      console.log("Sección creada con éxito:", message);
-      alert("Sección creada con éxito");
+      await sectionService.createSection(newSection);
+      toast.success("Sección creada con éxito");
+      loadSections();
     } catch (error) {
-      console.error("Error al crear la sección:", error);
-      alert("Hubo un error al crear la sección.");
+      toast.error("Error al crear la sección:" + error);
     }
   }
 
@@ -76,7 +76,7 @@ function SessionCreate() {
       const sections = await sectionService.getSectionsBySubject(subject_id);
       setSections(sections);
     } catch (error) {
-      alert("Hubo un error al obtener las secciones.");
+      toast.error("Hubo un error al obtener las secciones.");
     }
   }
 
@@ -96,7 +96,7 @@ function SessionCreate() {
         errorMessage += "- Debes seleccionar una sección.\n";
       }
   
-      alert(errorMessage);
+      toast.warning(errorMessage);
       return;
     }
   
@@ -109,12 +109,10 @@ function SessionCreate() {
         video: video || "",
         section_id: selectedSection ,
       };
-      const message = await sessionService.createSession(newSession);
-      console.log("Sesión creada con éxito:", message);
-      alert("Sesión creada con éxito");
+      await sessionService.createSession(newSession);
+      toast.success("Sesión creada con éxito");
     } catch (error) {
-      console.error("Error al crear la sesión:", error);
-      alert("Hubo un error al crear la sesión.");
+      toast.error("Error al crear la sesión:" + error);
     }
   }
 

@@ -7,8 +7,9 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import { NextUIProvider } from "@nextui-org/react";
+import { Bounce, ToastContainer } from "react-toastify";
 import "./tailwind.css";
-
+import "react-toastify/dist/ReactToastify.css";
 
 
 export const links: LinksFunction = () => [
@@ -41,6 +42,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <ScrollRestoration />
           <Scripts />
         </NextUIProvider>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition={Bounce}/>
       </body>
     </html>
   );
