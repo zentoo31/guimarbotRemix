@@ -4,7 +4,7 @@ import SpinnerX from "~/ui-components/spinner";
 import { Link, MetaFunction, Outlet, redirect, useNavigate, useLocation } from "@remix-run/react"
 import { Admin } from "~/models/admin";
 import { useEffect, useState } from "react";
-import { HiChartPie, HiMail, HiUsers, HiInbox, HiBookOpen, HiDocumentDuplicate, HiKey, HiChartBar } from "react-icons/hi";
+import { HiChartPie, HiMail, HiUsers, HiBookOpen, HiDocumentDuplicate, HiKey, HiChartBar } from "react-icons/hi";
 import {parseAbsoluteToLocal} from "@internationalized/date";
 import { AuthService } from "~/services/auth.service";
 import { AdminInfoService } from "~/services/admin.info.service";
@@ -222,16 +222,7 @@ function Index() {
               <HiUsers className="w-6 h-6" fillOpacity={0.5}/>
               <span className="flex-1 ms-3 whitespace-nowrap">Gestor de usuarios</span>
             </Link>
-          </li>
-          <li>
-            <Link
-              to="/dashboard/inbox"
-              className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${isActive('/dashboard/inbox')}`}
-            >
-              <HiInbox className="w-6 h-6" fillOpacity={0.5}/>
-              <span className="flex-1 ms-3 whitespace-nowrap">Bandeja de entrada</span>
-            </Link>
-          </li>
+          </li> 
           <li>
             <Link
               to="/dashboard/subjects"

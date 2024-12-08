@@ -18,11 +18,38 @@ function AdminDetail({adminID}: adminDetailProps) {
   const adminLogsService = new AdminLogsService();
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [authLogs, setAuthLogs] = useState<AuthLog[]>([]);
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [first_name, setFirst_name] = useState<string>("");
+  const [last_name, setLast_name] = useState<string>("");
+
+  const updateAdmin = async () => {
+    const adminUpdated = {
+      _id: adminID,
+      username,
+      email,
+      password: "",
+      first_name,
+      last_name
+    }
+    try{
+      await adminService.updateAdmin(adminUpdated);
+      console.log("Administrador actualizado correctamente");
+      loadAdmin();
+    }catch(error){
+      console.error("Error al actualizar el administrador:", error);
+    }
+  }
+
 
   const loadAdmin = async () => {
     try{
       const admin = await adminService.getAdminById(adminID);
       setAdmin(admin);
+      setUsername(admin.username);
+      setEmail(admin.email);
+      setFirst_name(admin.first_name);
+      setLast_name(admin.last_name);
     }catch(error){
       console.error("Error al cargar el administrador:", error);
     }
@@ -53,13 +80,13 @@ function AdminDetail({adminID}: adminDetailProps) {
               <h1 className="font-bold text-xl">Información de perfil</h1>
               <div className="flex flex-col text-start items-start gap-2 ">
                   <Label>Nombre</Label>
-                  <TextInput placeholder="Nombre" defaultValue={admin?.first_name} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={admin?.first_name} className="w-full" onChange={(e) => setFirst_name(e.target.value)}/>
                   <Label>Apellidos</Label>
-                  <TextInput placeholder="Nombre" defaultValue={admin?.last_name} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={admin?.last_name} className="w-full" onChange={(e) => setLast_name(e.target.value)}/>
                   <Label>Usuario</Label>
-                  <TextInput placeholder="Nombre" defaultValue={admin?.username} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={admin?.username} className="w-full" onChange={(e) => setUsername(e.target.value)}/>
                   <Label>Correo</Label>
-                  <TextInput placeholder="Nombre" defaultValue={admin?.email} className="w-full"/>
+                  <TextInput placeholder="Nombre" defaultValue={admin?.email} className="w-full" onChange={(e) => setEmail(e.target.value)}/>
                   <div className="flex flex-row items-end gap-2 w-full">
                       <div >
                           <Label>Contraseña</Label>
@@ -74,17 +101,17 @@ function AdminDetail({adminID}: adminDetailProps) {
             <div className="flex flex-col w-full gap-2">
               <div className="flex flex-col w-full gap-2">
                 <Button color="danger">Desactivar cuenta</Button>
-                <Button color="secondary">Remover permisos</Button>
                 <Button color="primary" variant="bordered" isDisabled>Activar cuenta</Button>
               </div>
               <div className="flex flex-row w-full gap-2">
-                <Button color="primary" className="w-1/2">Guardar</Button>
+                <Button color="primary" className="w-1/2" onClick={updateAdmin}>Guardar</Button>
                 <Button color="primary" variant="bordered" className="w-1/2" disabled>Cancelar</Button>
               </div>
             </div>
         </Card>
 
         <Card className="flex flex-col w-3/4 overflow-y-scroll">
+        <h1 className="font-bold text-xl">Logs de autenticación</h1>
         <Table>
             <Table.Head>
               <Table.HeadCell>Dirección IP</Table.HeadCell>

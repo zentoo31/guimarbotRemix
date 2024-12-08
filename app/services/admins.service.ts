@@ -29,7 +29,7 @@ export class AdminService{
 
     async updateAdmin(admin: Admin): Promise<Admin> {
         try {
-          const response = await fetch(`${this.baseURL}/update`, {
+          const response = await fetch(`${this.baseURL}/update/${admin._id}`, {
             method: "PUT",
             credentials: "include", 
             headers: {
