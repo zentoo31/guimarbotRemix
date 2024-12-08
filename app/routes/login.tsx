@@ -6,6 +6,7 @@ import { useNavigate } from "@remix-run/react";
 import { useState } from "react";
 import { AuthService } from "~/services/auth.service";
 import CustomToast from "~/ui-components/customToast";
+import { UAParser } from 'ua-parser-js';
 
 export const meta: MetaFunction = () => {
   return [
@@ -24,11 +25,29 @@ function Login() {
   const navigate = useNavigate();
 
 
+  const getDeviceDetails = () => {
+    const userAgent = window.navigator.userAgent; // Obtener el user-agent del navegador
+    const parser = new UAParser(userAgent.toString()); 
+    const result = parser.getResult();
+    return {
+      os: result.os.name || "Unknown OS", 
+      browser: result.browser.name || "Unknown Browser", 
+      isMobile: result.device.type === "mobile", 
+    };
+  };
+
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
+    const { os, browser, isMobile } = getDeviceDetails();
     try {
-      const data = await authService.login(email, password);
+      const data = await authService.login(email, password, {
+        os,
+        browser,
+        isMobile,
+      });      
+      console.log(data);
+      
       if (data.message === "Administrador autenticado") {
         setToastProps({ message: "Usuario creado correctamente", success: true });
         setTimeout( () =>{

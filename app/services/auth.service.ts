@@ -13,9 +13,9 @@ export class AuthService{
         }
     }
 
-    async login (email: string, password: string){
-        try{
-            const response = await axios.post(`${this.baseURL}/login`, {email, password}, {withCredentials: true});
+    async login(email: string, password: string, loginData: { os: string, browser: string, isMobile: boolean}) {
+      try{
+            const response = await axios.post(`${this.baseURL}/login`,{ email, password, ...loginData },{withCredentials: true});
             return response.data;
         }catch(error){
             throw new Error("Error al iniciar sesion");
