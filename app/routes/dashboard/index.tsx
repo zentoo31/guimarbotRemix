@@ -1,14 +1,14 @@
-import { User, DateInput } from "@nextui-org/react";
+import { User } from "@nextui-org/react";
 import { LoaderFunction } from "@remix-run/node";
 import SpinnerX from "~/ui-components/spinner";
 import { Link, MetaFunction, Outlet, redirect, useNavigate, useLocation } from "@remix-run/react"
 import { Admin } from "~/models/admin";
 import { useEffect, useState } from "react";
 import { HiChartPie, HiMail, HiUsers, HiBookOpen, HiDocumentDuplicate, HiKey, HiChartBar } from "react-icons/hi";
-import {parseAbsoluteToLocal} from "@internationalized/date";
 import { AuthService } from "~/services/auth.service";
 import { AdminInfoService } from "~/services/admin.info.service";
 import { toast } from "react-toastify";
+import moment from "moment";
 
 export const meta: MetaFunction = () => {
     return [
@@ -52,11 +52,15 @@ function Index() {
     const getAdminInfo = async () => {
       const adminInfoService = new AdminInfoService();
       const adminInfo = await adminInfoService.getAdminHeaderInfo();
-      setAdmin(adminInfo);  
+      setAdmin(adminInfo);        
     };
 
     getAdminInfo();
   }, []);  
+
+  const formattedDate = admin?.last_login?.date
+  ? new Date(admin.last_login.date).toISOString()
+  : "2021-09-01T00:00:00Z";  
 
   if (isAuth === null) {
     return <SpinnerX/>;
@@ -113,13 +117,9 @@ function Index() {
               </Link>
             </div>
             <div className="flex items-center">
-              <div className="flex flex-wrap md:flex-nowrap gap-3">
-                <h6 className="text-sm">Ultima sesión:</h6>
-                <DateInput
-                  isReadOnly
-                  defaultValue={parseAbsoluteToLocal("2024-10-07T07:45:00Z")}
-                  labelPlacement="outside"
-                  />
+              <div className="flex flex-wrap md:flex-nowrap  items-center">
+                <h6 className="text-sm w-full">Ultima sesión:</h6>
+                  <h6 className="text-sm w-full">{moment(formattedDate).local().format('D [de] MMMM [de] YYYY, HH:mm') } </h6>
               </div>
               <div className="flex items-center ms-3">
                 <div>
