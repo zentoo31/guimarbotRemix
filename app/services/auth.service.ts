@@ -3,6 +3,7 @@ import axios from "axios";
 
 export class AuthService {
   private baseURL = "http://localhost:3000/api/admin-auth";
+  private refreshInterval: any;
 
   async register(admin: Admin) {
     try {
@@ -15,8 +16,14 @@ export class AuthService {
 
   async login(email: string, password: string) {
     try {
-      const response = await axios.post(`${this.baseURL}/login`, { email, password }, { withCredentials: true });
-      console.log('Respuesta del login:', response.data);
+      const response = await axios.post(
+        `${this.baseURL}/login`,
+        { email, password },
+        { withCredentials: true }
+      );
+      console.log("Respuesta del login:", response.data);
+
+      this.startTokenRefresh();
       return response.data;
     } catch (error) {
       throw new Error("Error al iniciar sesion");
@@ -37,6 +44,8 @@ export class AuthService {
         throw new Error("Error al cerrar la sesión");
       }
 
+      clearInterval(this.refreshInterval);
+
       const result = await response.json();
       console.log("Sesión cerrada:", result);
     } catch (error) {
@@ -48,33 +57,36 @@ export class AuthService {
   async isAuth() {
     try {
       const response = await fetch(`${this.baseURL}/verify-token`, {
-        method: 'GET',
-        credentials: 'include'
+        method: "GET",
+        credentials: "include", 
       });
 
       if (response.ok) {
-        const data = await response.json();
-        return data;  // Si la respuesta es válida, devolver los datos
+        console.log("El access_token es válido.");
+        return true; 
+      } else if (response.status === 401) {
+        console.log("El access_token expiró, intentando renovar...");
+        await this.refreshAccessToken();
+        return true; 
       } else {
-        // Si el token es inválido, intentar refrescar el token
-        return await this.refreshAccessToken();
+        throw new Error("Error en la verificación del token");
       }
     } catch (error) {
-      console.log("Error en la verificación del token:", error);
-      return false;  // Si hay algún error, retornar false (sesión no autenticada)
+      console.error("Error en la verificación del token:", error);
+      return false; 
     }
   }
 
   private async refreshAccessToken() {
     try {
       const response = await fetch(`${this.baseURL}/verify-refreshtoken`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Refresh Token validado:', data);
+        console.log("Refresh Token validado y access_token renovado:", data);
       } else {
         throw new Error("No se pudo refrescar el token");
       }
@@ -84,4 +96,17 @@ export class AuthService {
     }
   }
 
+  private startTokenRefresh() {
+    if (this.refreshInterval) clearInterval(this.refreshInterval);
+
+    this.refreshInterval = setInterval(async () => {
+      try {
+        console.log("Renovando access_token antes de que expire...");
+        await this.refreshAccessToken();
+      } catch (error) {
+        console.error("Error al renovar el token:", error);
+        window.location.href = "/login"; 
+      }
+    }, 12000); 
+  }
 }
