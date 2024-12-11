@@ -40,11 +40,11 @@ export default function index() {
   const [usersWithScholarship, setUsersWithScholarship] = useState(0);
 
   const data = {
-    labels: ['Cuentas creadas', 'Docentes registrados', 'Suscritos', 'Becados'],
+    labels: ['Cuentas creadas', 'Docentes registrados'],
     datasets: [
       {
         label: 'Resumen',
-        data: [accountsCreated, teachersCreated, usersSubscribed, usersWithScholarship],
+        data: [accountsCreated, teachersCreated],
         backgroundColor: [
           'rgb(255, 99, 132)',
           'rgb(54, 162, 235)',
