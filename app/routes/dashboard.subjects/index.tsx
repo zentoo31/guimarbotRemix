@@ -247,7 +247,7 @@ function Index() {
             </Table.Body>
           </Table>
           )}         
-          <Modal isOpen={isEditRoute} onOpenChange={onEditRouteChange} backdrop="blur" size="full">
+          <Modal isOpen={isEditRoute} onOpenChange={onEditRouteChange} backdrop="blur" size="5xl">
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>
@@ -257,7 +257,7 @@ function Index() {
             </ModalContent>
           </Modal>
 
-          <Modal isOpen={isCreateRoute} onOpenChange={onCreateRouteChange} backdrop="blur" size="full">
+          <Modal isOpen={isCreateRoute} onOpenChange={onCreateRouteChange} backdrop="blur" size="5xl">
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>
