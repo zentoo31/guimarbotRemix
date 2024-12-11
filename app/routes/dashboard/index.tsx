@@ -4,7 +4,7 @@ import SpinnerX from "~/ui-components/spinner";
 import { Link, MetaFunction, Outlet, redirect, useNavigate, useLocation } from "@remix-run/react"
 import { Admin } from "~/models/admin";
 import { useEffect, useState } from "react";
-import { HiChartPie, HiMail, HiUsers, HiBookOpen, HiDocumentDuplicate, HiKey, HiChartBar } from "react-icons/hi";
+import { HiChartPie, HiMail, HiUsers, HiBookOpen, HiDocumentDuplicate, HiKey } from "react-icons/hi";
 import { AuthService } from "~/services/auth.service";
 import { AdminInfoService } from "~/services/admin.info.service";
 import { toast } from "react-toastify";
@@ -237,15 +237,6 @@ function Index() {
                 >
                 <HiDocumentDuplicate className = "w-6 h-6" fillOpacity={0.5} />
                   <span className="flex-1 ms-3 whitespace-nowrap">Gestor de becas</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/charts"
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-                >
-                <HiChartBar className = "w-6 h-6" fillOpacity={0.5} />
-                  <span className="flex-1 ms-3 whitespace-nowrap">Gráficos</span>
                 </Link>
               </li>
             </ul>

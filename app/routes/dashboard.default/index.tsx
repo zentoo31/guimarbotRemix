@@ -23,39 +23,6 @@ ChartJS.register(
   Legend
 );
 
-const data = {
-  labels: ['Cuentas creadas', 'Docentes registrados', 'Suscritos', 'Becados'],
-  datasets: [
-    {
-      label: 'Resumen',
-      data: [2200, 1000, 1000, 200],
-      backgroundColor: [
-        'rgb(255, 99, 132)',
-        'rgb(54, 162, 235)',
-        'rgb(255, 205, 86)',
-        'rgb(153, 102, 255)'
-      ],
-      hoverOffset: 4,
-    },
-  ],
-};
-
-const barData = {
-  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: [100, 200, 300, 400, 500, 600, 700],
-      backgroundColor: 'rgb(255, 99, 132)',
-    },
-    {
-      label: 'Dataset 2',
-      data: [50, 100, 150, 200, 250, 300, 350],
-      backgroundColor: 'rgb(75, 192, 192)',
-    },
-  ],
-};
-
 const options = {
   plugins: {
     title: {
@@ -71,6 +38,40 @@ export default function index() {
   const [teachersCreated, setTeachersCreated] = useState(0);
   const [usersSubscribed, setUsersSubscribed] = useState(0);
   const [usersWithScholarship, setUsersWithScholarship] = useState(0);
+
+  const data = {
+    labels: ['Cuentas creadas', 'Docentes registrados', 'Suscritos', 'Becados'],
+    datasets: [
+      {
+        label: 'Resumen',
+        data: [accountsCreated, teachersCreated, usersSubscribed, usersWithScholarship],
+        backgroundColor: [
+          'rgb(255, 99, 132)',
+          'rgb(54, 162, 235)',
+          'rgb(255, 205, 86)',
+          'rgb(153, 102, 255)'
+        ],
+        hoverOffset: 4,
+      },
+    ],
+  };
+
+    const barData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    datasets: [
+      {
+        label: 'Dataset 1',
+        data: [100, 200, 300, 400, 500, 600, 700],
+        backgroundColor: 'rgb(255, 99, 132)',
+      },
+      {
+        label: 'Dataset 2',
+        data: [50, 100, 150, 200, 250, 300, 350],
+        backgroundColor: 'rgb(75, 192, 192)',
+      },
+    ],
+    };
+
 
   const loadResume = async () => {
     try {
