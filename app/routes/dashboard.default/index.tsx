@@ -1,76 +1,69 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Card } from "flowbite-react"
-import {HiUser, HiUsers } from "react-icons/hi"
 import { ResumeService } from "~/services/resume.service";
 import { useState, useEffect } from "react";
+import { HiUser, HiUsers } from "react-icons/hi"
+import { Doughnut,Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  Title,
+  ArcElement,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  Title,
+  ArcElement,
   Tooltip,
   Legend
 );
 
-export const options = {
-  plugins: {
-    title: {
-      display: true,
-      text: 'Chart.js Bar Chart - Stacked',
-    },
-  },
-  responsive: true,
-  interaction: {
-    mode: 'index' as const,
-    intersect: false,
-  },
-  scales: {
-    x: {
-      stacked: true,
-    },
-    y: {
-      stacked: true,
-    },
-  },
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-  labels,
+const data = {
+  labels: ['Cuentas creadas', 'Docentes registrados', 'Suscritos', 'Becados'],
   datasets: [
     {
-      label: 'Dataset 1',
-      data: labels.map(() => faker.number.int({ min: -1000, max: 1000 })),
-      backgroundColor: 'rgb(255, 99, 132)',
-      stack: 'Stack 0',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() => faker.number.int({ min: -1000, max: 1000 })),
-      backgroundColor: 'rgb(75, 192, 192)',
-      stack: 'Stack 0',
-    },
-    {
-      label: 'Dataset 3',
-      data: labels.map(() => faker.number.int({ min: -1000, max: 1000 })),
-      backgroundColor: 'rgb(53, 162, 235)',
-      stack: 'Stack 1',
+      label: 'Resumen',
+      data: [2200, 1000, 1000, 200],
+      backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 205, 86)',
+        'rgb(153, 102, 255)'
+      ],
+      hoverOffset: 4,
     },
   ],
 };
 
+const barData = {
+  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+  datasets: [
+    {
+      label: 'Dataset 1',
+      data: [100, 200, 300, 400, 500, 600, 700],
+      backgroundColor: 'rgb(255, 99, 132)',
+    },
+    {
+      label: 'Dataset 2',
+      data: [50, 100, 150, 200, 250, 300, 350],
+      backgroundColor: 'rgb(75, 192, 192)',
+    },
+  ],
+};
+
+const options = {
+  plugins: {
+    title: {
+      display: true,
+      text: 'Ingresos por suscripción',
+    },
+  },
+};
 
 export default function index() {
   const resumeService = new ResumeService();	
@@ -129,10 +122,13 @@ export default function index() {
         </Card>
       </div>
       <h3 className="font-bold text-md">Ingresos por suscripción</h3>
-      <div>
-        <Card>
-        <Bar options={options} data={data} />
-        </Card>        
+      <div className="flex gap-6">
+        <Card className="w-full max-w-lg">
+          <Doughnut options={options} data={data} />
+        </Card>
+        <Card className="w-full max-w-x1">
+          <Bar options={options} data={barData} />
+        </Card>
       </div>
     </div>
   )
