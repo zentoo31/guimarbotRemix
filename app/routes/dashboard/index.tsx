@@ -242,15 +242,6 @@ function Index() {
               <span className="flex-1 ms-3 whitespace-nowrap">Gestor de becas</span>
             </Link>
           </li>
-          <li>
-            <Link
-              to="/dashboard/charts"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-            >
-            <HiChartBar className = "w-6 h-6" fillOpacity={0.5} />
-              <span className="flex-1 ms-3 whitespace-nowrap">Gráficos</span>
-            </Link>
-          </li>
         </ul>
        { admin?.role === "superadmin" &&(
          <ul  className="space-y-2 font-medium border-t-2 border-gray-200 dark:border-gray-700 pt-2">
