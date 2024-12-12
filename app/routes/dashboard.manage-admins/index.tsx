@@ -40,6 +40,8 @@ function Index() {
       ? await adminLogsService.getAuthLogsByUsername(search)
       : await adminLogsService.getAllAuthLogs();
     setAuthLogs(data);
+    console.log(data);
+    
     setLoadingAuthLogs(false);
   }, 500), [] );
 
@@ -196,7 +198,7 @@ function Index() {
             <Table.Body className="divide-y">
               {authLogs.map((log) => (
                 <Table.Row key={log._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell>{log.admin.username}</Table.Cell>
+                  <Table.Cell>{log._id}</Table.Cell>
                   <Table.Cell>{log.ip_address}</Table.Cell>
                   <Table.Cell>{log.browser}</Table.Cell>
                   <Table.Cell>{log.os}</Table.Cell>
