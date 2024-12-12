@@ -109,6 +109,6 @@ export class AuthService {
         console.error("Error al renovar el token:", error);
         window.location.href = "/login"; 
       }
-    }, 12000); 
+    }, 1200000); 
   }
 }
