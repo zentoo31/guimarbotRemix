@@ -33,6 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
         <script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"> </script>
         <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
       </head>

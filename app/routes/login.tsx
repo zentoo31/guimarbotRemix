@@ -10,8 +10,8 @@ import { UAParser } from 'ua-parser-js';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Login: Guimarbot administrativo" },
-    { name: "página de inicio de sesión", content: "Bienvenido a guimarbot" },
+    { title: "Login: SkillConnect administrativo" },
+    { name: "página de inicio de sesión", content: "Bienvenido a SkillConnect" },
   ];
 };
 
@@ -70,8 +70,8 @@ function Login() {
     return (
     <div className="flex flex-col justify-center items-center h-[100vh] py-10 relative animate-fade-in-down">
       <div className="flex flex-row justify-between items-center text-center space-x-3 ">
-        <img src="/favicon.ico" alt="" className="w-20 h-15"/>
-        <h1 className="text-4xl font-bold">GuimarBot: <span className="font-normal">Administrativo</span></h1>
+        <img src="/favicon.svg" alt="" className="w-20 h-15"/>
+        <h1 className="text-4xl font-bold">SkillConnect: <span className="font-normal">Administrativo</span></h1>
       </div>
       <div className="flex flex-col mx-0 w-96">
         <form action="" className="flex flex-col my-1" onSubmit={handleLogin}>

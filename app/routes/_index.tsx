@@ -4,7 +4,7 @@ import { redirect } from "@remix-run/node";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Iniciar Sesión | Guimarbot Administrativo" }
+    { title: "Iniciar Sesión | SkillConnect Administrativo" }
   ];
 };
 

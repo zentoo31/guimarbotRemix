@@ -15,7 +15,7 @@ export default function register() {
   return (
     <div className="flex flex-col justify-center items-center h-full py-10 relative animate-fade-in-down">
     <div className="flex flex-row justify-between items-center text-center space-x-3 ">
-      <img src="/favicon.ico" alt="" className="w-20 h-15"/>
+      <img src="/favicon.svg" alt="" className="w-20 h-15"/>
       <h1 className="text-4xl font-bold">GuimarBot: <span className="font-normal">Administrativo</span></h1>
     </div>
     <div className="flex flex-col mx-0 w-96">

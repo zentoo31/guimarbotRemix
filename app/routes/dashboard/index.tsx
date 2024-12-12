@@ -12,7 +12,7 @@ import moment from "moment";
 
 export const meta: MetaFunction = () => {
     return [
-        {title: "Dashboard | Guimarbot administrativo"}
+        {title: "Dashboard | SkillConnect administrativo"}
     ];
 }
 
@@ -108,10 +108,10 @@ function Index() {
                 <img
                   src="/favicon.ico"
                   className="h-8 me-3"
-                  alt="Guimarbot Logo"
+                  alt="SkillConnect Logo"
                 />
                 <span className="self-center text-xl font-bold sm:text-2xl whitespace-nowrap dark:text-white mr-1">
-                  Guimarbot:
+                SkillConnect:
                 </span>
                 <span className="self-center text-xl font-normal sm:text-2xl whitespace-nowrap dark:text-white">Administrativo</span>
               </Link>
