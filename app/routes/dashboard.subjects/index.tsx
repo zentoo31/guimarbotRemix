@@ -1,15 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { MetaFunction } from "@remix-run/react"
 import { Card, Table } from "flowbite-react";
-import { Button, Modal, ModalContent, useDisclosure, Chip } from "@nextui-org/react";
-import { HiPlus, HiBookOpen} from "react-icons/hi";
+import { Button, Modal, ModalContent, useDisclosure, Chip, Spinner } from "@nextui-org/react";
+import { HiPlus, HiBookOpen, HiPencil} from "react-icons/hi";
 import SubjectCreate from "./subjectCreate";
 import SubjectDetail from "./subjectDetail";
 import RouteCreate from "./routeCreate";
 import RouteDetail from "./routeDetail";
 import SessionCreate from "./sessionCreate";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SubjectService } from "~/services/subject.service";
+import { RouteService } from "~/services/route.service";
 import { Subject } from "~/models/subject";
+import { Route } from "~/models/route";
+import  debounce  from "lodash";
+
 
 export const meta: MetaFunction = () => {
   return [
@@ -17,92 +22,11 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-const rutas = [
-  {
-    rutaid: 'ruta-js-basico',
-    nombre: 'JavaScript Básico',
-    descripcion: 'Introducción a los conceptos fundamentales de JavaScript.',
-    dificultad: 'Principiante',
-    categoria: 'Programación',
-    fechaCreacion: '2024-09-01',
-  },
-  {
-    rutaid: 'ruta-html-avanzado',
-    nombre: 'HTML Avanzado',
-    descripcion: 'Curso avanzado sobre las últimas técnicas y estándares de HTML.',
-    dificultad: 'Intermedio',
-    categoria: 'Desarrollo Web',
-    fechaCreacion: '2024-09-05',
-  },
-  {
-    rutaid: 'ruta-css-basico',
-    nombre: 'CSS para Principiantes',
-    descripcion: 'Guía completa para principiantes que quieran aprender CSS desde cero.',
-    dificultad: 'Principiante',
-    categoria: 'Diseño Web',
-    fechaCreacion: '2024-09-10',
-  },
-  {
-    rutaid: 'ruta-react-intermedio',
-    nombre: 'Desarrollo con React',
-    descripcion: 'Profundiza en el desarrollo de aplicaciones usando React.',
-    dificultad: 'Intermedio',
-    categoria: 'Programación',
-    fechaCreacion: '2024-09-12',
-  },
-  {
-    rutaid: 'ruta-ts-basico',
-    nombre: 'TypeScript Básico',
-    descripcion: 'Curso para aprender TypeScript y su uso en aplicaciones JavaScript.',
-    dificultad: 'Principiante',
-    categoria: 'Programación',
-    fechaCreacion: '2024-09-15',
-  },
-  {
-    rutaid: 'ruta-node-intro',
-    nombre: 'Introducción a Node.js',
-    descripcion: 'Aprende los conceptos básicos y la configuración inicial de Node.js.',
-    dificultad: 'Intermedio',
-    categoria: 'Backend',
-    fechaCreacion: '2024-09-18',
-  },
-  {
-    rutaid: 'ruta-sql-basico',
-    nombre: 'SQL para Desarrolladores',
-    descripcion: 'Guía esencial para entender bases de datos SQL y cómo trabajar con ellas.',
-    dificultad: 'Principiante',
-    categoria: 'Bases de Datos',
-    fechaCreacion: '2024-09-20',
-  },
-  {
-    rutaid: 'ruta-angular-intro',
-    nombre: 'Angular desde Cero',
-    descripcion: 'Curso introductorio para desarrollar aplicaciones con Angular.',
-    dificultad: 'Intermedio',
-    categoria: 'Programación',
-    fechaCreacion: '2024-09-22',
-  },
-  {
-    rutaid: 'ruta-python-basico',
-    nombre: 'Python para Principiantes',
-    descripcion: 'Curso para principiantes sobre los fundamentos de Python.',
-    dificultad: 'Principiante',
-    categoria: 'Programación',
-    fechaCreacion: '2024-09-25',
-  },
-  {
-    rutaid: 'ruta-django-intro',
-    nombre: 'Desarrollo Web con Django',
-    descripcion: 'Introducción al desarrollo web utilizando el framework Django.',
-    dificultad: 'Intermedio',
-    categoria: 'Backend',
-    fechaCreacion: '2024-09-28',
-  },
-];
-
 
 function Index() {
+  const MIN_ROWS = 15;
   const subjectService = new SubjectService();
+  const routeService = new RouteService();
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onOpenChange: onCreateModalChange } = useDisclosure();
   const { isOpen: isCreateSession, onOpen: onCreateSession, onOpenChange: onCreateSessionChange } = useDisclosure();
@@ -110,24 +34,46 @@ function Index() {
   const { isOpen: isEditRoute, onOpen: onEditeRoute, onOpenChange: onEditRouteChange } = useDisclosure();
   const [cursoId, setCursoId] = useState<string>("");
   const [title, setTitle] = useState<string>("");
-  const [subjects, setSubjects] = useState<Subject[] | null>(null);   
+  const [routeTitle, setRouteTitle] = useState<string>("");
+  const [subjects, setSubjects] = useState<Subject[] | null>(null);
+  const [routes, setRoutes] = useState<Route[] | null>(null);
+  const [isLoadingSubjects, setLoadingSubjects] = useState(false);
+  const [isLoadingRoutes, setLoadingRoutes] = useState(false);
 
-  const loadSubjects = async () => {
-    const subjects = await subjectService.getSubjects();      
-    setSubjects(subjects);
-  };
+  const loadSubjects = useCallback(
+    debounce.debounce(async (searchTitle: string) => {
+      setLoadingSubjects(true);
+      const data = searchTitle
+        ? await subjectService.getSubjectsByTitle(searchTitle)
+        : await subjectService.getSubjects();
+      setSubjects(data);
+      setLoadingSubjects(false);
+    }, 500), 
+    []
+  );
 
-  const loadSubjectsByTitle = async () => {
-    const subjects = await subjectService.getSubjectsByTitle(title);      
-    setSubjects(subjects);
-  }
+  const loadRoutes = useCallback(
+    debounce.debounce(async (searchTitle: string) => {
+      setLoadingRoutes(true);
+      const data = searchTitle
+        ? await routeService.getRouteByTitle(searchTitle)
+        : await routeService.getAllRoutes();
+      setRoutes(data);
+      setLoadingRoutes(false);
+    }, 500),
+    []
+  );
 
+  useEffect(() => {
+    loadSubjects(title);
+    return () => loadSubjects.cancel();
+  }, [title, loadSubjects]);
 
-  if (title == "" || title === null) {
-    loadSubjects();
-  }else{
-    loadSubjectsByTitle();
-  }
+  useEffect(() => {
+    loadRoutes(routeTitle);
+    return () => loadRoutes.cancel();
+  }, [routeTitle, loadRoutes]);
+ 
 
   return (
     <div className="w-full animate-fade-in-down flex flex-col gap-4">
@@ -148,42 +94,63 @@ function Index() {
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                 </svg>
               </div>
-              <input type="text" id="table-search" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar por uuid o nombre" onChange={(e) => {setTitle(e.target.value)}} />
+              <input type="text" id="table-search" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar por titulo" onChange={(e) => {setTitle(e.target.value)}} />
             </div>
           </div>
-          <Table>
-            <Table.Head>
-              <Table.HeadCell>uuid</Table.HeadCell>
-              <Table.HeadCell>Nombre</Table.HeadCell>
-              <Table.HeadCell>Autor</Table.HeadCell>
-              <Table.HeadCell>Nivel</Table.HeadCell>
-              <Table.HeadCell>Fecha de creación</Table.HeadCell>
-              <Table.HeadCell>Estado</Table.HeadCell>
-              <Table.HeadCell>Acción</Table.HeadCell>
-              <Table.HeadCell>
-                <span className="sr-only">Edit</span>
-              </Table.HeadCell>
-            </Table.Head>
-            <Table.Body className="divide-y">
-              {subjects?.map((curso) => (
-                <Table.Row key={curso._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell>{curso._id}</Table.Cell>
-                  <Table.Cell>{curso.title}</Table.Cell>
-                  <Table.Cell>{curso.author}</Table.Cell>
-                  <Table.Cell>{curso.level}</Table.Cell>
-                  <Table.Cell>{curso.created_at}</Table.Cell>
-                  <Table.Cell>{curso.is_active ?  (<Chip variant="dot" color="success">Activado</Chip>)
-                : ( <Chip color="danger" variant="dot">Desactivado</Chip>)}</Table.Cell>
-                  <Table.Cell>
-                    <Button onPress={()=>{
-                      setCursoId(curso._id);
-                      onOpen();
-                    }} className="font-mediu" color="primary">editar</Button>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
+
+          { isLoadingSubjects ? (
+                <div className="w-full h-[50vh] flex flex-row items-center justify-center">
+                  <Spinner label="Cargando..." color="primary" labelColor="primary" className=""></Spinner>
+                </div>
+              )
+              : (
+              <Table>
+                  <Table.Head>
+                    <Table.HeadCell>uuid</Table.HeadCell>
+                    <Table.HeadCell>Nombre</Table.HeadCell>
+                    <Table.HeadCell>Autor</Table.HeadCell>
+                    <Table.HeadCell>Nivel</Table.HeadCell>
+                    <Table.HeadCell>Fecha de creación</Table.HeadCell>
+                    <Table.HeadCell>Estado</Table.HeadCell>
+                    <Table.HeadCell>Acción</Table.HeadCell>
+                    <Table.HeadCell>
+                      <span className="sr-only">Edit</span>
+                    </Table.HeadCell>
+                  </Table.Head>
+                  <Table.Body className="divide-y">
+                    {subjects?.map((curso) => (
+                      <Table.Row key={curso._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                        <Table.Cell>{curso._id}</Table.Cell>
+                        <Table.Cell>{curso.title}</Table.Cell>
+                        <Table.Cell>{curso.author}</Table.Cell>
+                        <Table.Cell>{curso.level}</Table.Cell>
+                        <Table.Cell>{curso.created_at}</Table.Cell>
+                        <Table.Cell>{curso.is_active ?  (<Chip variant="dot" color="success">Activado</Chip>)
+                      : ( <Chip color="danger" variant="dot">Desactivado</Chip>)}</Table.Cell>
+                        <Table.Cell>
+                          <Button onPress={()=>{
+                            setCursoId(curso._id);
+                            onOpen();
+                          }} className="font-mediu flex flex-row gap-2" color="primary">  
+                            <HiPencil className="w-5 h-5" opacity={1}/> 
+                            Editar
+                          </Button>
+                          
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+
+                    {Array.from({ length: Math.max(0, MIN_ROWS - (subjects?.length || 0)) }).map((_, index) => (
+                          <Table.Row key={`empty-${index}`} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                            <Table.Cell colSpan={7} className="text-center text-gray-500 py-4">
+                              {}
+                            </Table.Cell>
+                          </Table.Row>
+                        ))}
+                  </Table.Body>
+                </Table>
+              )}
+          
           <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur" size="full">
             <ModalContent className="bg-[#111827]" >
               { () =>(
@@ -194,7 +161,7 @@ function Index() {
             </ModalContent>
           </Modal>
 
-          <Modal isOpen={isCreateModalOpen} onOpenChange={onCreateModalChange} backdrop="blur" size="full">
+          <Modal isOpen={isCreateModalOpen} onOpenChange={onCreateModalChange} backdrop="blur" size="4xl">
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>
@@ -233,37 +200,54 @@ function Index() {
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                 </svg>
               </div>
-              <input type="text" id="table" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar por uuid o nombre" />
+              <input type="text" id="table" className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Buscar por título" onChange={(e)=> {setRouteTitle(e.target.value)}}/>
             </div>
           </div>
-          <Table>
+          
+          {isLoadingRoutes ? (
+              <div className="w-full h-[50vh] flex flex-row items-center justify-center">
+                <Spinner label="Cargando..." color="primary" labelColor="primary" className=""></Spinner>
+              </div>
+          ): (
+            <Table>
             <Table.Head>
-              <Table.HeadCell>rutaid</Table.HeadCell>
+              <Table.HeadCell>ID</Table.HeadCell>
               <Table.HeadCell>Nombre</Table.HeadCell>
               <Table.HeadCell>Descripcion</Table.HeadCell>
-              <Table.HeadCell>Dificultad</Table.HeadCell>
-              <Table.HeadCell>Categoría</Table.HeadCell>
               <Table.HeadCell>Fecha de creación</Table.HeadCell>
+              <Table.HeadCell>Estado</Table.HeadCell>
+              <Table.HeadCell></Table.HeadCell>
               <Table.HeadCell>
                 <span className="sr-only">Edit</span>
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {rutas.map((ruta) => (
-                <Table.Row key={ruta.rutaid} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell>{ruta.nombre}</Table.Cell>
-                  <Table.Cell>{ruta.descripcion}</Table.Cell>
-                  <Table.Cell>{ruta.dificultad}</Table.Cell>
-                  <Table.Cell>{ruta.categoria}</Table.Cell>
-                  <Table.Cell>{ruta.fechaCreacion}</Table.Cell>
+              {routes?.map((ruta) => (
+                <Table.Row key={ruta._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <Table.Cell>{ruta._id}</Table.Cell>
+                  <Table.Cell>{ruta.title}</Table.Cell>
+                  <Table.Cell>{ruta.description}</Table.Cell>
+                  <Table.Cell>{ruta.created_at}</Table.Cell>
+                  <Table.Cell>{ruta.is_active ?  (<Chip variant="dot" color="success">Activado</Chip>)
+                      : ( <Chip color="danger" variant="dot">Desactivado</Chip>)}</Table.Cell>
+                        <Table.Cell></Table.Cell>
                   <Table.Cell>
-                    <Button onPress={onEditeRoute} className="font-mediu" color="primary">editar</Button>
+                    <Button onPress={onEditeRoute} className="font-medium flex flex-row gap-2" color="primary"><HiPencil className="w-5 h-5" opacity={1}/>Editar</Button>
                   </Table.Cell>
                 </Table.Row>
               ))}
+
+              {Array.from({ length: Math.max(0, MIN_ROWS - (routes?.length || 0)) }).map((_, index) => (
+                  <Table.Row key={`empty-${index}`} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell colSpan={7} className="text-center text-gray-500 py-4">
+                        {}
+                    </Table.Cell>
+                  </Table.Row>
+              ))}
             </Table.Body>
           </Table>
-          <Modal isOpen={isEditRoute} onOpenChange={onEditRouteChange} backdrop="blur" size="full">
+          )}         
+          <Modal isOpen={isEditRoute} onOpenChange={onEditRouteChange} backdrop="blur" size="5xl">
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>
@@ -273,7 +257,7 @@ function Index() {
             </ModalContent>
           </Modal>
 
-          <Modal isOpen={isCreateRoute} onOpenChange={onCreateRouteChange} backdrop="blur" size="full">
+          <Modal isOpen={isCreateRoute} onOpenChange={onCreateRouteChange} backdrop="blur" size="5xl">
             <ModalContent className="bg-[#111827]" >
               { () =>(
                 <>

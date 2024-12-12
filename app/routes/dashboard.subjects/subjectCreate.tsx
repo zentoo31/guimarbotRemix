@@ -3,7 +3,8 @@ import { Subject } from "~/models/subject"
 import { SubjectService } from "~/services/subject.service"
 import UploadWidget from "./uploadWidget"
 import { useState } from "react"
-import { Button } from "@nextui-org/react"
+import { Button, Image } from "@nextui-org/react"
+import { toast } from "react-toastify"
 
 function SubjectCreate() {
   const subjectService = new SubjectService();
@@ -29,7 +30,7 @@ function SubjectCreate() {
 
   const handleSave = async () => {
     if (!title || !author || !description || !hours || !price || !image || !banner) {
-      alert("Por favor, completa todos los campos.");
+      toast.warning("Por favor, completa todos los campos.");
       return;
     }
 
@@ -49,12 +50,10 @@ function SubjectCreate() {
       tags,
     };
     try {
-      const message = await subjectService.createSubject(newSubject);
-      console.log("Curso creado con éxito:", message);
-      alert("Curso creado con éxito");
+      await subjectService.createSubject(newSubject);
+      toast.success("Curso creado con éxito");
     } catch (error) {
-      console.error("Error al crear el curso:", error);
-      alert("Hubo un error al crear el curso.");
+      toast.error("Error al crear el curso:" + error);
     }
   };
 
@@ -64,7 +63,7 @@ function SubjectCreate() {
               <div className="w-full flex flex-col gap-4">
               <h1 className="font-bold text-xl text-start">Registrar curso</h1>
                 <div className="w-full flex flex-row justify-between gap-5 items-center"> 
-                  <img src={image ?? "https://placehold.co/600x400"} alt="" className="w-60 h-40"/>
+                  <Image src={image ?? "https://placehold.co/600x400"} alt="" className="w-60 h-40"/>
                   
                   <div className="w-full flex flex-col gap-5">
                     <UploadWidget folder="images_subject" preset = "image_subject" label = "Subir portada" formats={['png', 'jpeg', 'jpg', 'webp']} onUploadSuccess={handleUploadSuccessImage}/>

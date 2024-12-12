@@ -14,19 +14,21 @@ export class AuthService {
     }
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string, loginData?: { os: string, browser: string, isMobile: boolean }) {
     try {
       const response = await axios.post(
         `${this.baseURL}/login`,
-        { email, password },
+        { email, password, ...loginData },
         { withCredentials: true }
       );
+
       console.log("Respuesta del login:", response.data);
 
       this.startTokenRefresh();
       return response.data;
     } catch (error) {
-      throw new Error("Error al iniciar sesion");
+      console.error("Error en login:", error.message);
+      throw new Error("Error al iniciar sesión");
     }
   }
 
